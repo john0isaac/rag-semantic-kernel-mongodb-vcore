@@ -39,9 +39,9 @@ To run the flask application, follow these steps:
     pip install -r requirements.txt
     ```
 
-1. Run the [notebook](./rag-azure-openai-cosmosdb-notebook.ipynb) to generate the .env file and test out everything first.
+1. **Run the [notebook](./rag-azure-openai-cosmosdb-notebook.ipynb) to generate the .env file and test out everything first**
 
-1. Execute the following command in your terminal to start the flask app.
+1. **Execute the following command in your terminal to start the flask app**
 
     ```bash
     export FLASK_APP=app.py
