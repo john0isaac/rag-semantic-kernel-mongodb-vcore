@@ -19,7 +19,7 @@ Test it inside codespaces 👇
 
 ## Running the web app
 
-To run the flask application, follow these steps:
+To run the Quart application, follow these steps:
 
 1. **Download the project starter code locally**
 
@@ -50,22 +50,22 @@ To run the flask application, follow these steps:
 
 1. **Run the [notebook](./rag-azure-openai-cosmosdb-notebook.ipynb) to generate the .env file and test out everything first**
 
-1. **Execute the following command in your terminal to start the flask app**
+1. **Execute the following command in your terminal to start the quart app**
 
     ```bash
-    export FLASK_APP=app.py
-    export FLASK_ENV=development
-    export FLASK_DEBUG=true
-    flask run --reload
+    export QUART_APP=app.py
+    export QUART_ENV=development
+    export QUART_DEBUG=true
+    quart run --reload
     ```
 
     **For Windows, use [`setx`](https://learn.microsoft.com/windows-server/administration/windows-commands/setx) command shown below:**
 
    ```powershell
-    setx FLASK_APP app.py
-    setx FLASK_ENV development
-    setx FLASK_DEBUG true
-    flask run --reload
+    setx QUART_APP app.py
+    setx QUART_ENV development
+    setx QUART_DEBUG true
+    quart run --reload
     ```
 
 1. **Verify on the Browser**

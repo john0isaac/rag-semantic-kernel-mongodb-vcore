@@ -1,3 +1,3 @@
 ipykernel
 semantic-kernel
-Flask
+Quart
