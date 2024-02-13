@@ -1,0 +1,26 @@
+// Adopting the default GitHub codespaces-jupyter template as starter
+// https://github.com/github/codespaces-jupyter
+
+{
+    "name" : "RAG Azure MongoDB vCore and OpenAI",
+    "image": "mcr.microsoft.com/devcontainers/universal:2",
+    "hostRequirements": {
+        "cpus": 2,
+        "memory": "8gb",
+        "storage": "32gb"
+    },
+    "waitFor": "onCreateCommand",
+    "updateContentCommand": "python3 -m pip install -r requirements.txt",
+    "postCreateCommand": "",
+    "customizations": {
+      "codespaces": {
+        "openFiles": ["README.md"]
+      },
+      "vscode": {
+        "extensions": [
+          "ms-python.python",
+          "ms-toolsai.jupyter"
+        ]
+      }
+    }
+}
