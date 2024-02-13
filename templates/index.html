@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <title>RAG App</title>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ title }}</h1>
+        <div>Enter a query, choose an option, and click Respond!</div>
+        <div>
+            <form method="POST">
+                <div class="form-group">
+                    <textarea name="text" cols="20" rows="5" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="option">Option:</label>
+                    <select name="option" class="form-control">
+                        <option value="rag">RAG</option>
+                        <option value="vector">Vector Only</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-success">Respond!</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
