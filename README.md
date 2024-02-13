@@ -2,6 +2,15 @@
 
 A sample for implementing retrieval augmented generation using Azure Open AI to generate embeddings, Azure Cosmos DB for MongoDB vCore to perform vector search, and semantic kernel.
 
+## Prerequisties
+
+Create these resources on Microsoft Azure:
+
+- Azure Cosmos DB for MongoDB vCore instance
+- Azure OpenAI resource with:
+    - Embedding model deployment. (ex. `text-embedding-ada-002`)
+    - Chat model deployment. (ex. `gpt-35-turbo`)
+
 📝 Start here 👉 [rag-azure-openai-cosmosdb-notebook.ipynb](./rag-azure-openai-cosmosdb-notebook.ipynb)
 
 Test it inside codespaces 👇
