@@ -42,7 +42,7 @@ async def prompt_with_rag_or_vector(query_term: str, option: str, update_data: b
     store = await initialize_sk_memory_store(kernel)
 
     if update_data:
-        await upsert_data_to_memory_store(kernel, store, "text-sample.json")
+        await upsert_data_to_memory_store(kernel.memory, store, "text-sample.json")
 
     if option == "rag":
         result = await perform_rag_search(kernel, query_term)
@@ -140,8 +140,11 @@ async def upsert_data_to_memory_store(kernel_memory_store: callable, memory_stor
         n = 0
         for item in data:
             n+=1
-            
-            if not await memory_store.get(collection_name, item["id"], with_embedding=True):
+            try:
+                already_created = bool(await memory_store.get(collection_name, item["id"], with_embedding=True))
+            except Exception:
+                already_created = False
+            if not already_created:
                 await kernel_memory_store.save_information(
                     collection=collection_name,
                     id=item["id"],
