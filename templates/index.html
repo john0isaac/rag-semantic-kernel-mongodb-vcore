@@ -27,11 +27,11 @@
                         <div class="toast fade show w-75 rounded-3 align-self-end">
                             <div class="toast-header text-light background-user">
                                 <i class="bi bi-person me-1" aria-hidden="true"></i>
-                                <strong class="me-auto text-capitalize">
+                                <strong class="me-auto text-capitalize fs-4">
                                     You
                                 </strong>
                             </div>
-                            <div class="toast-body message-content">
+                            <div class="toast-body message-content fs-5">
                             </div>
                         </div>
                 </div>
@@ -42,11 +42,11 @@
                         <div class="toast fade show w-75 rounded-3 align-self-start">
                             <div class="toast-header text-light background-assistant">
                                 <i class="bi bi-robot me-1" aria-hidden="true"></i>
-                                <strong class="me-auto text-capitalize">
+                                <strong class="me-auto text-capitalize fs-4">
                                     Assistant
                                 </strong>
                             </div>
-                            <div class="toast-body message-content">
+                            <div class="toast-body message-content fs-5">
                                 <em class="typing-indicator">Typing...</em>
                             </div>
                         </div>
@@ -93,11 +93,14 @@
 
             const userTemplateClone = userTemplate.content.cloneNode(true);
             userTemplateClone.querySelector(".message-content").innerText = message;
+            let userDiv = userTemplateClone.querySelector(".message-content");
             targetContainer.appendChild(userTemplateClone);
+            userDiv.scrollIntoView();
 
             const assistantTemplateClone = assistantTemplate.content.cloneNode(true);
             let messageDiv = assistantTemplateClone.querySelector(".message-content");
             targetContainer.appendChild(assistantTemplateClone);
+            messageDiv.scrollIntoView();
 
             const response = await fetch("/chat", {
                 method: "POST",
