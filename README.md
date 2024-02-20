@@ -75,3 +75,7 @@ To run the Quart application, follow these steps:
 1. **Verify on the Browser**
 
 Navigate to project homepage [http://127.0.0.1:5000/](http://127.0.0.1:5000/) or [http://localhost:5000](http://localhost:5000)
+
+
+https://github.com/john0isaac/rag-semantic-kernel-mongodb-vcore/assets/64026625/8a7556d6-2b54-40b5-825b-06d6efd4d1ca
+
