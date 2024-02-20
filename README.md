@@ -13,6 +13,8 @@ A sample for implementing retrieval augmented generation using Azure Open AI to 
 
 1. 📝 Start here 👉 [rag-azure-openai-cosmosdb-notebook.ipynb](./rag-azure-openai-cosmosdb-notebook.ipynb)
 
+    ![Notebook run GIF](./notebook-full.gif)
+
 Test it inside codespaces 👇
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/john0isaac/rag-semantic-kernel-mongodb-vcore?devcontainer_path=.devcontainer/devcontainer.json)
