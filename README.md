@@ -13,7 +13,7 @@ A sample for implementing retrieval augmented generation using Azure Open AI to 
 
 1. 📝 Start here 👉 [rag-azure-openai-cosmosdb-notebook.ipynb](./rag-azure-openai-cosmosdb-notebook.ipynb)
 
-    ![Notebook run GIF](./notebook-full.gif)
+    ![Notebook run GIF](./notebook-full.mp4)
 
 Test it inside codespaces 👇
 
