@@ -14,12 +14,7 @@ A sample for implementing retrieval augmented generation using Azure Open AI to 
 1. 📝 Start here 👉 [rag-azure-openai-cosmosdb-notebook.ipynb](./rag-azure-openai-cosmosdb-notebook.ipynb)
 
 
-https://github.com/john0isaac/rag-semantic-kernel-mongodb-vcore/notebook-full.mp4
-
-
-<video controls>
-  <source alt="Full notebook run video." src="./notebook-full.mp4" type="video/mp4">
-</video>
+https://raw.githubusercontent.com/john0isaac/rag-semantic-kernel-mongodb-vcore/main/notebook-full.mp4
 
 Test it inside codespaces 👇
 
