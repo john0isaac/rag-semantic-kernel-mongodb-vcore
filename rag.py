@@ -18,11 +18,16 @@ collection_name = config.get("AZCOSMOS_CONTAINER_NAME")
 
 # Vector search index parameters
 index_name = "VectorSearchIndex"
-vector_dimensions = 1536 # text-embedding-ada-002 uses a 1536-dimensional embedding vector
+vector_dimensions = (
+    1536  # text-embedding-ada-002 uses a 1536-dimensional embedding vector
+)
 num_lists = 1
-similarity = "COS" # cosine distance 
+similarity = "COS"  # cosine distance
 
-async def prompt_with_rag_or_vector(query_term: str, option: str, update_data: bool) -> str:
+
+async def prompt_with_rag_or_vector(
+    query_term: str, option: str, update_data: bool
+) -> str:
     """
     This asynchronous function initializes a kernel and a memory store, optionally updates the memory store with data from a file,
     and performs a search based on the provided query term using either the RAG (Retrieval-Augmented Generation) method or vector search.
@@ -53,6 +58,7 @@ async def prompt_with_rag_or_vector(query_term: str, option: str, update_data: b
     else:
         raise ValueError("Invalid option. Please choose either 'rag' or 'only-vector'.")
 
+
 def initialize_sk_chat_embedding() -> callable:
     # get api key and endpoint from .env file
     _, api_key, endpoint = sk.azure_openai_settings_from_dot_env()
@@ -61,43 +67,47 @@ def initialize_sk_chat_embedding() -> callable:
     chat_model_deployment_name = config.get("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME")
 
     azure_chat_service = AzureChatCompletion(
-        deployment_name=chat_model_deployment_name,
-        endpoint=endpoint,
-        api_key=api_key
+        deployment_name=chat_model_deployment_name, endpoint=endpoint, api_key=api_key
     )
     kernel.add_chat_service(chat_model_deployment_name, azure_chat_service)
     print("Added Azure OpenAI Chat Service...")
 
     # adding azure openai text embedding service
-    embedding_model_deployment_name = config.get("AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME")
+    embedding_model_deployment_name = config.get(
+        "AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME"
+    )
 
     azure_text_embedding_service = AzureTextEmbedding(
         deployment_name=embedding_model_deployment_name,
         endpoint=endpoint,
-        api_key=api_key
+        api_key=api_key,
     )
 
-    kernel.add_text_embedding_generation_service(embedding_model_deployment_name, azure_text_embedding_service)
+    kernel.add_text_embedding_generation_service(
+        embedding_model_deployment_name, azure_text_embedding_service
+    )
     print("Added Azure OpenAI Embedding Generation Service...")
 
     return kernel
+
 
 async def initialize_sk_memory_store(kernel: callable) -> callable:
     print("Creating or updating Azure Cosmos DB Memory Store...")
     # create azure cosmos db for mongo db vcore api store and collection with vector ivf
     # currently, semantic kernel only supports the ivf vector kind
-    store  = await AzureCosmosDBMemoryStore.create(
+    store = await AzureCosmosDBMemoryStore.create(
         database_name=config.get("AZCOSMOS_DATABASE_NAME"),
         collection_name=collection_name,
         index_name=index_name,
         vector_dimensions=vector_dimensions,
         num_lists=num_lists,
-        similarity=similarity
+        similarity=similarity,
     )
     print("Finished updating Azure Cosmos DB Memory Store...")
     kernel.register_memory_store(memory_store=store)
     print("Registered Azure Cosmos DB Memory Store...")
     return store
+
 
 async def perform_rag_search(kernel: callable, query_term: str):
     result = await perform_vector_search(kernel.memory, query_term)
@@ -111,20 +121,26 @@ async def perform_rag_search(kernel: callable, query_term: str):
     User: {{$query_term}}
     Chatbot:"""
 
-    chat_function = kernel.create_semantic_function(prompt, max_tokens=500, temperature=0.0, top_p=0.5)
+    chat_function = kernel.create_semantic_function(
+        prompt, max_tokens=500, temperature=0.0, top_p=0.5
+    )
     context = kernel.create_new_context()
 
-    context['query_term'] = query_term
-    context['db_record'] = result[0].additional_metadata
+    context["query_term"] = query_term
+    context["db_record"] = result[0].additional_metadata
 
     return await chat_function.invoke(context=context)
- 
+
+
 async def perform_vector_search(kernel_memory_store: callable, query_term: str) -> list:
     return await kernel_memory_store.search(collection_name, query_term)
 
-async def upsert_data_to_memory_store(kernel_memory_store: callable, memory_store: callable, data_file_path: str) -> None:
+
+async def upsert_data_to_memory_store(
+    kernel_memory_store: callable, memory_store: callable, data_file_path: str
+) -> None:
     """
-    This asynchronous function takes two memory stores and a data file path as arguments. 
+    This asynchronous function takes two memory stores and a data file path as arguments.
     It is designed to upsert (update or insert) data into the memory stores from the data file.
 
     Args:
@@ -139,9 +155,13 @@ async def upsert_data_to_memory_store(kernel_memory_store: callable, memory_stor
         data = json.load(f)
         n = 0
         for item in data:
-            n+=1
+            n += 1
             try:
-                already_created = bool(await memory_store.get(collection_name, item["id"], with_embedding=True))
+                already_created = bool(
+                    await memory_store.get(
+                        collection_name, item["id"], with_embedding=True
+                    )
+                )
             except Exception:
                 already_created = False
             if not already_created:
@@ -149,8 +169,14 @@ async def upsert_data_to_memory_store(kernel_memory_store: callable, memory_stor
                     collection=collection_name,
                     id=item["id"],
                     text=item["content"],
-                    description=item["title"]
+                    description=item["title"],
                 )
-                print("Generating embeddings and saving new item:", n, "/" ,len(data), end='\r')
+                print(
+                    "Generating embeddings and saving new item:",
+                    n,
+                    "/",
+                    len(data),
+                    end="\r",
+                )
             else:
-                print("Skipping item already exits:", n, "/" ,len(data), end='\r')
+                print("Skipping item already exits:", n, "/", len(data), end="\r")

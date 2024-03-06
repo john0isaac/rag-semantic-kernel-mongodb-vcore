@@ -1,25 +1,20 @@
 import logging
-from quart import (
-    Quart,
-    render_template,
-    request,
-    current_app,
-    jsonify
-)
+from quart import Quart, render_template, request, current_app, jsonify
 from rag import (
     initialize_sk_chat_embedding,
     initialize_sk_memory_store,
     perform_rag_search,
     perform_vector_search,
-    upsert_data_to_memory_store
+    upsert_data_to_memory_store,
 )
 
 # logging.basicConfig(level=logging.DEBUG)
 
 app = Quart(__name__)
 
+
 @app.before_serving
-async def intialize_sk():
+async def initialize_sk():
     app.sk_kernel = initialize_sk_chat_embedding()
     app.sk_store = await initialize_sk_memory_store(app.sk_kernel)
 
@@ -29,24 +24,30 @@ async def intialize_sk():
     first_run = False
     if first_run:
         try:
-            await upsert_data_to_memory_store(app.sk_kernel.memory, app.sk_store, "text-sample.json")
+            await upsert_data_to_memory_store(
+                app.sk_kernel.memory, app.sk_store, "text-sample.json"
+            )
         except TimeoutError:
-            await upsert_data_to_memory_store(app.sk_kernel.memory, app.sk_store, "text-sample.json")
+            await upsert_data_to_memory_store(
+                app.sk_kernel.memory, app.sk_store, "text-sample.json"
+            )
 
     current_app.logger.info("Serving the app...")
 
-@app.route('/', methods=['GET'])
+
+@app.route("/", methods=["GET"])
 async def landing_page():
     return await render_template(
-        'index.html',
-        title = 'RAG using Semantic Kernel with Azure OpenAI and Azure Cosmos DB for MongoDB vCore'
+        "index.html",
+        title="RAG using Semantic Kernel with Azure OpenAI and Azure Cosmos DB for MongoDB vCore",
     )
 
-@app.route('/chat', methods=['POST'])
+
+@app.route("/chat", methods=["POST"])
 async def chat_handler():
     body = await request.get_json()
-    query_term = body.get('message', 'Blank')
-    rag_or_vector = body.get('option', 'rag')
+    query_term = body.get("message", "Blank")
+    rag_or_vector = body.get("option", "rag")
 
     try:
         if rag_or_vector == "rag":
@@ -54,18 +55,21 @@ async def chat_handler():
         elif rag_or_vector == "vector":
             response = await perform_vector_search(app.sk_kernel.memory, query_term)
             response = response[0].text
-        return jsonify({
-        'answer': str(response)
-        })
+        return jsonify({"answer": str(response)})
     except ValueError as e:
         logging.exception("Exception in %s: %s", "/chat", e)
-        return jsonify({
-            'error': "Invalid option. Please choose either 'rag' or 'only-vector'."
-        }), 400
+        return (
+            jsonify(
+                {
+                    "error": "Invalid option. Please choose either 'rag' or 'only-vector'."
+                }
+            ),
+            400,
+        )
 
 
 # Default port:
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
 
 # Or specify port manually:
