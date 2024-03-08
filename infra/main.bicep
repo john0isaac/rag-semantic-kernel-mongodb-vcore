@@ -11,6 +11,7 @@ param location string
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
 
+var mongoClusterName = '${uniqueString(resourceGroup.id)}-mvcore'
 var mongoAdminUser = 'admin${uniqueString(resourceGroup.id)}'
 @secure()
 @description('Mongo Server administrator password')
@@ -105,7 +106,7 @@ module mongoCluster 'core/database/cosmos/mongo/cosmos-mongo-cluster.bicep' = {
   name: 'mongoCluster'
   scope: resourceGroup
   params: {
-    name: '${take(replace(prefix, '-', ''), 17)}-mongovcore'
+    name: mongoClusterName
     location: location
     tags: tags
     administratorLogin: mongoAdminUser
@@ -117,8 +118,6 @@ module mongoCluster 'core/database/cosmos/mongo/cosmos-mongo-cluster.bicep' = {
   }
 }
 
-var mongoSecret = replace(mongoCluster.outputs.connectionStringKey, '<user>', mongoAdminUser)
-var fullConnectionString = replace(mongoSecret, '<password>', mongoAdminPassword)
 
 module keyVaultSecrets './core/security/keyvault-secret.bicep' = {
   name: 'keyvault-secret-mongo-connstr'
@@ -126,7 +125,7 @@ module keyVaultSecrets './core/security/keyvault-secret.bicep' = {
   params: {
     name: 'mongoConnectionStr'
     keyVaultName: keyVault.outputs.name
-    secretValue: fullConnectionString
+    secretValue: 'mongodb+srv://${mongoAdminUser}:${mongoAdminPassword}@${mongoClusterName}.global.mongocluster.comongosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000'
   }
 }
 
