@@ -149,7 +149,7 @@ module web 'core/host/appservice.bicep' = {
       AZURE_OPENAI_ENDPOINT: openAi.outputs.endpoint
       AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: chatGptDeploymentName
       AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME: embeddingDeploymentName
-      AZURE_OPENAI_API_KEY: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=openai-secret)'
+      AZURE_OPENAI_API_KEY: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=cognitiveServiceKey)'
       AZCOSMOS_CONNSTR: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=mongoConnectionStr)'
       AZCOSMOS_API: 'mongo-vcore'
       AZCOSMOS_DATABASE_NAME: 'sk_database'
