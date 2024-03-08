@@ -1,4 +1,5 @@
 import json
+import os
 import semantic_kernel as sk
 from semantic_kernel import Kernel, KernelFunction
 from semantic_kernel.connectors.ai.open_ai import (
@@ -15,11 +16,6 @@ from semantic_kernel.core_plugins.text_memory_plugin import TextMemoryPlugin
 from semantic_kernel.prompt_template.input_variable import InputVariable
 import semantic_kernel.connectors.ai.open_ai as sk_oai
 
-# load the environment variables file
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
 
 # collection name will be used multiple times in the code so we store it in a variable
 collection_name = os.environ.get("AZCOSMOS_CONTAINER_NAME")
@@ -61,19 +57,18 @@ async def prompt_with_rag_or_vector(
         chat_function = await grounded_response(kernel)
         result = await perform_rag_search(kernel, memory, chat_function, query_term)
         return result
-    elif option == "vector":
+    if option == "vector":
         result = await perform_vector_search(memory, query_term)
         return result[0].text
-    else:
-        raise ValueError("Invalid option. Please choose either 'rag' or 'only-vector'.")
+    raise ValueError("Invalid option. Please choose either 'rag' or 'only-vector'.")
 
 
 def initialize_sk_chat_embedding() -> Kernel:
-    # get api key and endpoint from .env file
-    _, api_key, endpoint = sk.azure_openai_settings_from_dot_env()
     kernel = sk.Kernel()
     # adding azure openai chat service
     chat_model_deployment_name = os.environ.get("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME")
+    endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT")
+    api_key = os.environ.get("AZURE_OPENAI_API_KEY")
 
     kernel.add_service(
         AzureChatCompletion(
