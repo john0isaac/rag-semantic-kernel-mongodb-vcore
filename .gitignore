@@ -160,3 +160,5 @@ cython_debug/
 #.idea/
 sample_text_w_embeddings.json
 test.py
+
+.azure
