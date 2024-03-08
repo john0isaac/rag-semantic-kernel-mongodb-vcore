@@ -54,30 +54,15 @@ To run the Quart application, follow these steps:
 
 1. **Run the [notebook](./rag-azure-openai-cosmosdb-notebook.ipynb) to generate the .env file and test out everything first**
 
-1. **Execute the following command in your terminal to start the quart app**
+1. **Execute the following command in your terminal to start the quart app using hypercorn**
 
     ```bash
-    cd src
-    export QUART_APP=app.py
-    export QUART_ENV=development
-    export QUART_DEBUG=true
-    quart run --reload
-    ```
-
-    **For Windows, use [`setx`](https://learn.microsoft.com/windows-server/administration/windows-commands/setx) command shown below:**
-
-   ```powershell
-    cd src
-    setx QUART_APP app.py
-    setx QUART_ENV development
-    setx QUART_DEBUG true
-    quart run --reload
+    hypercorn src.app:app
     ```
 
 1. **Verify on the Browser**
 
-Navigate to project homepage [http://127.0.0.1:5000/](http://127.0.0.1:5000/) or [http://localhost:5000](http://localhost:5000)
+Navigate to project homepage [http://127.0.0.1:8000/](http://127.0.0.1:8000/) or [http://localhost:8000](http://localhost:8000)
 
 
 https://github.com/john0isaac/rag-semantic-kernel-mongodb-vcore/assets/64026625/8a7556d6-2b54-40b5-825b-06d6efd4d1ca
-
