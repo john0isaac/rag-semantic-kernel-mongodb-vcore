@@ -13,6 +13,9 @@
       },
       "mongoAdminPassword": {
         "value": "$(secretOrRandomPassword ${AZURE_KEY_VAULT_NAME} mongoAdminPassword)"
+      },
+      "addData": {
+        "value": "${ADD_DATA=false}"
       }
     }
   }

@@ -1,3 +1,4 @@
+import os
 import logging
 from quart import Quart, render_template, request, current_app, jsonify
 from rag import (
@@ -23,7 +24,7 @@ async def initialize_sk():
     # Load the new data into the memory store
     # Must be used the first time you run the app to populate the database
     # For faster startup, you can set the first_run variable to False to skip it
-    first_run = False
+    first_run = os.environ.get("ADD_DATA", False)
     if first_run:
         try:
             await upsert_data_to_memory_store(

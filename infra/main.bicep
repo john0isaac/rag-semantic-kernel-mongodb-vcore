@@ -24,6 +24,7 @@ param chatGptModelVersion string = '0613'
 param embeddingDeploymentName string = 'text-embedding'
 param embeddingDeploymentCapacity int = 30
 param embeddingModelName string = 'text-embedding-ada-002'
+param addData bool = false
 
 var resourceToken = toLower(uniqueString(subscription().id, name, location))
 var tags = { 'azd-env-name': name }
@@ -153,6 +154,7 @@ module web 'core/host/appservice.bicep' = {
       AZCOSMOS_API: 'mongo-vcore'
       AZCOSMOS_DATABASE_NAME: 'sk_database'
       AZCOSMOS_CONTAINER_NAME: 'sk_collection'
+      ADD_DATA: addData
     }
   }
 }
