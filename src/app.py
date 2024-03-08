@@ -1,7 +1,7 @@
 import os
 import logging
 from quart import Quart, render_template, request, current_app, jsonify
-from .rag import (
+from rag import (
     initialize_sk_chat_embedding,
     initialize_sk_memory_store,
     perform_rag_search,
