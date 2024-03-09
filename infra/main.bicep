@@ -102,6 +102,20 @@ module cognitiveServiceSecret './app/key-vault-secrets.bicep' = {
   }
 }
 
+module appServicePlan 'core/host/appserviceplan.bicep' = {
+  name: 'serviceplan'
+  scope: resourceGroup
+  params: {
+    name: '${prefix}-serviceplan'
+    location: location
+    tags: tags
+    sku: {
+      name: 'B1'
+    }
+    reserved: true
+  }
+}
+
 module mongoCluster 'core/database/cosmos/mongo/cosmos-mongo-cluster.bicep' = {
   name: 'mongoCluster'
   scope: resourceGroup
@@ -118,8 +132,8 @@ module mongoCluster 'core/database/cosmos/mongo/cosmos-mongo-cluster.bicep' = {
   }
 }
 
-
 module keyVaultSecrets './core/security/keyvault-secret.bicep' = {
+  dependsOn: [ mongoCluster ]
   name: 'keyvault-secret-mongo-connstr'
   scope: resourceGroup
   params: {
@@ -130,6 +144,7 @@ module keyVaultSecrets './core/security/keyvault-secret.bicep' = {
 }
 
 module web 'core/host/appservice.bicep' = {
+  dependsOn: [ mongoCluster ]
   name: 'appservice'
   scope: resourceGroup
   params: {
@@ -158,21 +173,8 @@ module web 'core/host/appservice.bicep' = {
   }
 }
 
-module appServicePlan 'core/host/appserviceplan.bicep' = {
-  name: 'serviceplan'
-  scope: resourceGroup
-  params: {
-    name: '${prefix}-serviceplan'
-    location: location
-    tags: tags
-    sku: {
-      name: 'B1'
-    }
-    reserved: true
-  }
-}
-
 module webKeyVaultAccess 'core/security/keyvault-access.bicep' = {
+  dependsOn: [ mongoCluster ]
   name: 'web-keyvault-access'
   scope: resourceGroup
   params: {
