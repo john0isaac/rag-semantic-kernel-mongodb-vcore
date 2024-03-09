@@ -1,4 +1,3 @@
-import os
 import logging
 from quart import Quart, render_template, request, current_app, jsonify
 from rag import (
@@ -6,7 +5,6 @@ from rag import (
     initialize_sk_memory_store,
     perform_rag_search,
     perform_vector_search,
-    upsert_data_to_memory_store,
     grounded_response,
 )
 
@@ -20,20 +18,6 @@ async def initialize_sk():
     app.sk_kernel = initialize_sk_chat_embedding()
     app.sk_memory, app.sk_store = await initialize_sk_memory_store(app.sk_kernel)
     app.sk_function = await grounded_response(app.sk_kernel)
-
-    # Load the new data into the memory store
-    # Must be used the first time you run the app to populate the database
-    # For faster startup, you can set the first_run variable to False to skip it
-    first_run = os.environ.get("ADD_DATA", False)
-    if first_run:
-        try:
-            await upsert_data_to_memory_store(
-                app.sk_memory, app.sk_store, "text-sample.json"
-            )
-        except TimeoutError:
-            await upsert_data_to_memory_store(
-                app.sk_memory, app.sk_store, "text-sample.json"
-            )
 
     current_app.logger.info("Serving the app...")
 
