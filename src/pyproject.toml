@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "Demo Chat Application to demonstrate retrieval augmented generation using Azure Open AI, Azure Cosmos DB for MongoDB vCore, and semantic kernel."
 dependencies = [
     "Quart",
-    "semantic-kernel==0.9.0b1",
+    "semantic-kernel==0.9.1b1",
     "python-dotenv",
     "Hypercorn",
     ]
