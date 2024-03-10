@@ -1,0 +1,5 @@
+-r src/requirements.txt
+
+ipykernel
+ruff
+black

@@ -1,3 +1,3 @@
-from . import app  # noqa
+from quartapp.app import create_app
 
-app = app.create_app()
+app = create_app()

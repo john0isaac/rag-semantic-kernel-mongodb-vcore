@@ -1,0 +1,14 @@
+[project]
+name = "quartapp"
+version = "1.0.0"
+description = "Demo Chat Application to demonstrate retrieval augmented generation using Azure Open AI, Azure Cosmos DB for MongoDB vCore, and semantic kernel."
+dependencies = [
+    "Quart",
+    "semantic-kernel==0.9.0b1",
+    "python-dotenv",
+    "Hypercorn",
+    ]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"

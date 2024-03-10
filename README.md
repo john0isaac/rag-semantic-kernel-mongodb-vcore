@@ -54,6 +54,12 @@ To run the Quart application, follow these steps:
 
 1. **Run the [notebook](./rag-azure-openai-cosmosdb-notebook.ipynb) to generate the .env file and test out everything first**
 
+1. **Install the app as an editable package:**
+
+    ```bash
+    pip install -e src
+    ```
+
 1. **Execute the following command in your terminal to start the quart app**
 
     ```bash

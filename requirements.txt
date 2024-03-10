@@ -1,4 +1,0 @@
-ipykernel
-semantic-kernel==0.9.0b1
-Quart
-Hypercorn
