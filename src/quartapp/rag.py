@@ -44,7 +44,7 @@ async def prompt_with_rag_or_vector(query_term: str, option: str) -> str:
         ValueError: If an invalid option is provided.
     """
     kernel = initialize_sk_chat_embedding()
-    memory, store = await initialize_sk_memory_store(kernel)
+    memory, _ = await initialize_sk_memory_store(kernel)
 
     if option == "rag":
         chat_function = await grounded_response(kernel)
@@ -52,7 +52,7 @@ async def prompt_with_rag_or_vector(query_term: str, option: str) -> str:
         return result
     if option == "vector":
         result = await perform_vector_search(memory, query_term)
-        return result[0].text
+        return result[0].text if result else "Not found!"
     raise ValueError("Invalid option. Please choose either 'rag' or 'only-vector'.")
 
 
@@ -165,10 +165,11 @@ async def perform_rag_search(
     query_term: str,
 ) -> str:
     result = await perform_vector_search(memory, query_term)
+    db_record = result[0].additional_metadata if result else "The requested data is not Found."
     return await kernel.invoke(
         chat_function,
         sk.KernelArguments(
-            query_term=query_term, db_record=result[0].additional_metadata
+            query_term=query_term, db_record=db_record
         ),
     )
 

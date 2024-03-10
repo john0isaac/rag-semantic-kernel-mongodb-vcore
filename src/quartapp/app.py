@@ -6,12 +6,12 @@ from . import rag  # noqa
 
 
 def create_app():
-    app = Quart(__name__)
+    app = Quart(__name__, template_folder="../frontend", static_folder="../frontend/static")
 
     @app.before_serving
     async def initialize_sk():
         app.sk_kernel = rag.initialize_sk_chat_embedding()
-        app.sk_memory, app.sk_store = await rag.initialize_sk_memory_store(
+        app.sk_memory, _ = await rag.initialize_sk_memory_store(
             app.sk_kernel
         )
         app.sk_function = await rag.grounded_response(app.sk_kernel)
@@ -38,7 +38,7 @@ def create_app():
                 )
             elif rag_or_vector == "vector":
                 response = await rag.perform_vector_search(app.sk_memory, query_term)
-                response = response[0].text
+                response = response[0].text if response else "Not found!"
             return jsonify({"answer": str(response)})
         except ValueError as e:
             logging.exception("Exception in %s: %s", "/chat", e)
