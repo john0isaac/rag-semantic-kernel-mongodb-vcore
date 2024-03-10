@@ -54,10 +54,24 @@ To run the Quart application, follow these steps:
 
 1. **Run the [notebook](./rag-azure-openai-cosmosdb-notebook.ipynb) to generate the .env file and test out everything first**
 
-1. **Execute the following command in your terminal to start the quart app using hypercorn**
+1. **Execute the following command in your terminal to start the quart app**
 
     ```bash
-    hypercorn src.app:app
+    cd src
+    export QUART_APP=src.quartapp
+    export QUART_ENV=development
+    export QUART_DEBUG=true
+    quart run --reload
+    ```
+
+    **For Windows, use [`setx`](https://learn.microsoft.com/windows-server/administration/windows-commands/setx) command shown below:**
+
+   ```powershell
+    cd src
+    setx QUART_APP src.quartapp
+    setx QUART_ENV development
+    setx QUART_DEBUG true
+    quart run --reload
     ```
 
 1. **Verify on the Browser**
