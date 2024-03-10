@@ -6,14 +6,14 @@ from . import rag  # noqa
 
 
 def create_app():
-    app = Quart(__name__, template_folder="../frontend", static_folder="../frontend/static")
+    app = Quart(
+        __name__, template_folder="../frontend", static_folder="../frontend/static"
+    )
 
     @app.before_serving
     async def initialize_sk():
         app.sk_kernel = rag.initialize_sk_chat_embedding()
-        app.sk_memory, _ = await rag.initialize_sk_memory_store(
-            app.sk_kernel
-        )
+        app.sk_memory, _ = await rag.initialize_sk_memory_store(app.sk_kernel)
         app.sk_function = await rag.grounded_response(app.sk_kernel)
 
         current_app.logger.info("Serving the app...")

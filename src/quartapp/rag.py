@@ -165,12 +165,12 @@ async def perform_rag_search(
     query_term: str,
 ) -> str:
     result = await perform_vector_search(memory, query_term)
-    db_record = result[0].additional_metadata if result else "The requested data is not Found."
+    db_record = (
+        result[0].additional_metadata if result else "The requested data is not Found."
+    )
     return await kernel.invoke(
         chat_function,
-        sk.KernelArguments(
-            query_term=query_term, db_record=db_record
-        ),
+        sk.KernelArguments(query_term=query_term, db_record=db_record),
     )
 
 
