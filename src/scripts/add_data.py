@@ -14,6 +14,8 @@ from semantic_kernel.core_plugins.text_memory_plugin import TextMemoryPlugin
 from semantic_kernel.memory.semantic_text_memory import SemanticTextMemory
 from semantic_kernel.memory.memory_store_base import MemoryStoreBase
 
+# path to JSON file containing the data
+data_path = os.environ.get("JSON_DATA_PATH", "../data/text-sample.json")
 
 # collection name will be used multiple times in the code so we store it in a variable
 collection_name = os.environ.get("AZCOSMOS_CONTAINER_NAME")
@@ -32,11 +34,11 @@ async def add_data() -> None:
     sk_memory, sk_store = await initialize_sk_memory_store(sk_kernel)
     try:
         await upsert_data_to_memory_store(
-            sk_memory, sk_store, "../data/text-sample.json"
+            sk_memory, sk_store, data_path
         )
     except TimeoutError:
         await upsert_data_to_memory_store(
-            sk_memory, sk_store, "../data/text-sample.json"
+            sk_memory, sk_store, data_path
         )
     print("Added the data successfully...")
 
