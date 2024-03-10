@@ -80,3 +80,55 @@ Navigate to project homepage [http://127.0.0.1:8000/](http://127.0.0.1:8000/) or
 
 
 https://github.com/john0isaac/rag-semantic-kernel-mongodb-vcore/assets/64026625/8a7556d6-2b54-40b5-825b-06d6efd4d1ca
+
+## Deployment
+
+This repository is set up for deployment on Azure App Service (w/Azure Cosmos DB for MongoDB vCore) using the configuration files in the `infra` folder.
+
+To deploy your own instance, follow these steps:
+
+1. Sign up for a [free Azure account](https://azure.microsoft.com/free/)
+
+1. Install the [Azure Dev CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/install-azd).
+
+1. Login to your Azure account:
+
+    ```shell
+    azd auth login
+    ```
+
+1. Initialize a new `azd` environment:
+
+    ```shell
+    azd init
+    ```
+
+    It will prompt you to provide a name (like "quart-app") that will later be used in the name of the deployed resources.
+
+1. Provision and deploy all the resources:
+
+    ```shell
+    azd up
+    ```
+
+    It will prompt you to login, pick a subscription, and provide a location (like "eastus"). Then it will provision the resources in your account and deploy the latest code. If you get an error with deployment, changing the location (like to "centralus") can help, as there may be availability constraints for some of the resources.
+
+When azd has finished deploying, you'll see an endpoint URI in the command output. Visit that URI to browse the app! 🎉
+
+> [!NOTE]
+> If you make any changes to the app code, you can just run this command to redeploy it:
+>
+> ```shell
+> azd deploy
+> ```
+>
+
+## Add the Data
+
+1. Open the [Azure portal](https://portal.azure.com) and sign in.
+
+1. Navigate to your App Service page.
+
+1. Select **SSH** from the left menu then, select **Go**.
+
+1. In the SSH terminal, run `python ./scripts/add_data.py`.
