@@ -129,6 +129,8 @@ When azd has finished deploying, you'll see an endpoint URI in the command outpu
 
 1. Navigate to your App Service page.
 
+    ![Azure App service screenshot with the word SSH highlighted in a red box.](https://github.com/john0isaac/rag-semantic-kernel-mongodb-vcore/assets/64026625/759db6be-604e-433c-878e-b6c3de671fd1)
+
 1. Select **SSH** from the left menu then, select **Go**.
 
 1. In the SSH terminal, run `python ./scripts/add_data.py`.
