@@ -1,6 +1,6 @@
 import logging
 from quart import Quart, render_template, request, current_app, jsonify
-from . import rag # noqa
+from . import rag  # noqa
 
 # logging.basicConfig(level=logging.DEBUG)
 
@@ -8,15 +8,15 @@ from . import rag # noqa
 def create_app():
     app = Quart(__name__)
 
-
     @app.before_serving
     async def initialize_sk():
         app.sk_kernel = rag.initialize_sk_chat_embedding()
-        app.sk_memory, app.sk_store = await rag.initialize_sk_memory_store(app.sk_kernel)
+        app.sk_memory, app.sk_store = await rag.initialize_sk_memory_store(
+            app.sk_kernel
+        )
         app.sk_function = await rag.grounded_response(app.sk_kernel)
 
         current_app.logger.info("Serving the app...")
-
 
     @app.route("/", methods=["GET"])
     async def landing_page():
@@ -24,7 +24,6 @@ def create_app():
             "index.html",
             title="RAG using Semantic Kernel with Azure OpenAI and Azure Cosmos DB for MongoDB vCore",
         )
-
 
     @app.route("/chat", methods=["POST"])
     async def chat_handler():
@@ -53,6 +52,7 @@ def create_app():
             )
 
     return app
+
 
 # Or specify port manually:
 """
