@@ -87,6 +87,8 @@ https://github.com/john0isaac/rag-semantic-kernel-mongodb-vcore/assets/64026625/
 
 ## Deployment
 
+![architecture-thumbnail](https://github.com/john0isaac/rag-semantic-kernel-mongodb-vcore/assets/64026625/7ce8ae6e-0424-47ce-b0a3-9be072eda27f)
+
 This repository is set up for deployment on Azure App Service (w/Azure Cosmos DB for MongoDB vCore) using the configuration files in the `infra` folder.
 
 To deploy your own instance, follow these steps:
