@@ -1,43 +1,46 @@
 #!/usr/bin/env python3
 import json
 import os
+from argparse import Namespace, ArgumentParser
 from semantic_kernel.memory.semantic_text_memory import SemanticTextMemory
 from semantic_kernel.memory.memory_store_base import MemoryStoreBase
 
 from quartapp.rag import initialize_sk_chat_embedding, initialize_sk_memory_store
 
-# path to JSON file containing the data
-data_path = os.environ.get("JSON_DATA_PATH", "./data/text-sample.json")
 
-# collection name will be used multiple times in the code so we store it in a variable
-collection_name = os.environ.get("AZCOSMOS_CONTAINER_NAME")
-
-
-async def add_data() -> None:
+async def add_data(input_args: Namespace) -> None:
     sk_kernel = initialize_sk_chat_embedding()
     sk_memory, sk_store = await initialize_sk_memory_store(sk_kernel)
     try:
-        await upsert_data_to_memory_store(sk_memory, sk_store, data_path)
+        await upsert_data_to_memory_store(
+            sk_memory,
+            sk_store,
+            input_args.file,
+            input_args.id_field,
+            input_args.text_field,
+            input_args.description_field,
+        )
     except TimeoutError:
-        await upsert_data_to_memory_store(sk_memory, sk_store, data_path)
+        await upsert_data_to_memory_store(
+            sk_memory,
+            sk_store,
+            input_args.file,
+            input_args.id_field,
+            input_args.text_field,
+            input_args.description_field,
+        )
     print("Added the data successfully...")
 
 
 async def upsert_data_to_memory_store(
-    memory: SemanticTextMemory, store: MemoryStoreBase, data_file_path: str
+    memory: SemanticTextMemory,
+    store: MemoryStoreBase,
+    data_file_path: str,
+    id_field_name: str,
+    text_field_name: str,
+    description_field_name: str,
 ) -> None:
-    """
-    This asynchronous function takes two memory stores and a data file path as arguments.
-    It is designed to upsert (update or insert) data into the memory stores from the data file.
 
-    Args:
-        kernel_memory_store (callable): A callable object that represents the kernel memory store where data will be upserted.
-        memory_store (callable): A callable object that represents the memory store where data will be upserted.
-        data_file_path (str): The path to the data file that contains the data to be upserted.
-
-    Returns:
-        None. The function performs an operation that modifies the memory stores in-place.
-    """
     # collection name will be used multiple times in the code so we store it in a variable
     collection_name = os.environ.get("AZCOSMOS_CONTAINER_NAME")
 
@@ -50,7 +53,9 @@ async def upsert_data_to_memory_store(
             # if the id doesn't exist, it throws an exception
             try:
                 already_created = bool(
-                    await store.get(collection_name, item["id"], with_embedding=True)
+                    await store.get(
+                        collection_name, item[id_field_name], with_embedding=True
+                    )
                 )
             except Exception:
                 already_created = False
@@ -58,10 +63,10 @@ async def upsert_data_to_memory_store(
             if not already_created:
                 await memory.save_information(
                     collection=collection_name,
-                    id=item["id"],
+                    id=item[id_field_name],
                     # the embedding is generated from the text field
-                    text=item["content"],
-                    description=item["title"],
+                    text=item[text_field_name],
+                    description=item[description_field_name],
                 )
                 print(
                     "Generating embeddings and saving new item:",
@@ -74,7 +79,47 @@ async def upsert_data_to_memory_store(
                 print("Skipping item already exits:", n, "/", len(data), end="\r")
 
 
+def get_input_args() -> Namespace:
+    # Parse using ArgumentParser
+    parser = ArgumentParser()
+
+    parser.add_argument(
+        "-f",
+        "--file",
+        type=str,
+        default="./data/text-sample.json",
+        help="path to the JSON file containing the data",
+    )
+
+    parser.add_argument(
+        "-id",
+        "--id-field",
+        type=str,
+        help="The id field to identify the data",
+        default="id",
+    )
+
+    parser.add_argument(
+        "-txt",
+        "--text-field",
+        type=str,
+        help="The text field to generate the embedding from",
+        default="content",
+    )
+
+    parser.add_argument(
+        "-desc",
+        "--description-field",
+        type=str,
+        help="The description field for the data",
+        default="title",
+    )
+
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
     import asyncio
 
-    asyncio.run(add_data())
+    input_args = get_input_args()
+    asyncio.run(add_data(input_args))
