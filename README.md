@@ -129,7 +129,7 @@ When azd has finished deploying, you'll see an endpoint URI in the command outpu
 > ```
 >
 
-## Add the Data
+### Add the Data
 
 1. Open the [Azure portal](https://portal.azure.com) and sign in.
 
@@ -140,3 +140,36 @@ When azd has finished deploying, you'll see an endpoint URI in the command outpu
 1. Select **SSH** from the left menu then, select **Go**.
 
 1. In the SSH terminal, run `python ./scripts/add_data.py`.
+
+## Add your Own Data
+
+The Python scrips that adds the data is configured to accept any JSON file with your data but you need to specify the following parameters when you run it:
+
+- Data file path: Path to the JSON file that contains your data. `--file="./data/text-sample.json"` or `-f "./data/text-sample.json"`
+- ID field: This is the name of the field that cosmos uses to identify your database records. `--id-field=id` or `-id id`
+- Text field: This is the name of the field that will be used to generate the vector embeddings from and stored in the database. `--text-field=content` or `-txt content`
+- Description field: This is the name of the description field that cosmos will store along with the embeddings. `--description-field=title` or `-desc title`
+
+    ```bash
+    python ./scripts/add_data.py --file="./data/text-sample.json" --id-field=id --text-field=contnet --description-field=title
+    ```
+
+### Example
+
+1. Add your JSON data to the [data folder](./src/data/).
+
+1. Run `azd deploy` to upload the data to Azure App Service.
+
+1. Open the [Azure portal](https://portal.azure.com) and sign in.
+
+1. Navigate to your App Service page.
+
+    ![Azure App service screenshot with the word SSH highlighted in a red box.](https://github.com/john0isaac/rag-semantic-kernel-mongodb-vcore/assets/64026625/759db6be-604e-433c-878e-b6c3de671fd1)
+
+1. Select **SSH** from the left menu then, select **Go**.
+
+1. In the SSH terminal, run the following command with the changed values to suit your data:
+
+    ```bash
+    python ./scripts/add_data.py --file="./data/text-sample.json" --id-field=id --text-field=contnet --description-field=title
+    ```
