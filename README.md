@@ -49,7 +49,7 @@ To run the Quart application, follow these steps:
 1. **Install the dependencies:**
 
     ```bash
-    pip install -r requirements.txt
+    pip install -r requirements-dev.txt
     ```
 
 1. **Run the [notebook](./rag-azure-openai-cosmosdb-notebook.ipynb) to generate the .env file and test out everything first**
