@@ -154,7 +154,27 @@ The Python scrips that adds the data is configured to accept any JSON file with 
     python ./scripts/add_data.py --file="./data/text-sample.json" --id-field=id --text-field=contnet --description-field=title
     ```
 
-### Example
+### Example for Step by step Manual Deployment
+
+1. Add your JSON data to the [data folder](./src/data/).
+
+1. The workflow will trigger automatically and push your data to the Azure App service.
+
+1. Open the [Azure portal](https://portal.azure.com) and sign in.
+
+1. Navigate to your App Service page.
+
+    ![Azure App service screenshot with the word SSH highlighted in a red box.](https://github.com/john0isaac/rag-semantic-kernel-mongodb-vcore/assets/64026625/759db6be-604e-433c-878e-b6c3de671fd1)
+
+1. Select **SSH** from the left menu then, select **Go**.
+
+1. In the SSH terminal, run the following command with the changed values to suit your data:
+
+    ```bash
+    python ./scripts/add_data.py --file="./data/text-sample.json" --id-field=id --text-field=contnet --description-field=title
+    ```
+
+### Example for azd Deployment
 
 1. Add your JSON data to the [data folder](./src/data/).
 
