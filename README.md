@@ -180,7 +180,7 @@ The Python scrips that adds the data is configured to accept any JSON file with 
     python ./scripts/add_data.py --file="./data/text-sample.json" --id-field=id --text-field=contnet --description-field=title
     ```
 
-### Example for azd Deployment
+### Example for `azd` Deployment
 
 1. Add your JSON data to the [data folder](./src/data/).
 
