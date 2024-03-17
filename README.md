@@ -135,7 +135,7 @@ When azd has finished deploying, you'll see an endpoint URI in the command outpu
 > ```
 >
 
-### Add the Data
+## Add the Data
 
 1. Open the [Azure portal](https://portal.azure.com) and sign in.
 
