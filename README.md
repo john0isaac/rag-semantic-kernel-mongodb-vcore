@@ -6,9 +6,9 @@ A sample for implementing retrieval augmented generation using Azure Open AI to 
 
 1. Create the following resources on Microsoft Azure:
 
-    - Azure Cosmos DB for MongoDB vCore cluster. See the [Quick Start guide here](https://learn.microsoft.com/azure/cosmos-db/mongodb/vcore/quickstart-portal).
+    - Azure Cosmos DB for MongoDB vCore cluster. See the [Quick Start guide here](https://techcommunity.microsoft.com/t5/educator-developer-blog/build-rag-chat-app-using-azure-cosmos-db-for-mongodb-vcore-and/ba-p/4055852#:~:text=RAG%20Chat%20Application-,Step%201%3A%20Create%20an%20Azure%20Cosmos%20DB%20for%20MongoDB%20vCore%20Cluster,-In%20this%20step).
     - Azure OpenAI resource with:
-        - Embedding model deployment. (ex. `text-embedding-ada-002`) See the [guide here](https://learn.microsoft.com/azure/ai-services/openai/how-to/create-resource?pivots=web-portal).
+        - Embedding model deployment. (ex. `text-embedding-ada-002`) See the [guide here](https://techcommunity.microsoft.com/t5/educator-developer-blog/build-rag-chat-app-using-azure-cosmos-db-for-mongodb-vcore-and/ba-p/4055852#:~:text=to%20it%20later.-,Step%202%3A%C2%A0Create%20an%20Azure%20OpenAI%20resource%20and%20Deploy%20chat%20and%20embedding%20Models,-In%20this%20step).
         - Chat model deployment. (ex. `gpt-35-turbo`)
 
 1. 📝 Start here 👉 [rag-azure-openai-cosmosdb-notebook.ipynb](./rag-azure-openai-cosmosdb-notebook.ipynb)
@@ -21,7 +21,7 @@ Test it inside codespaces 👇
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/john0isaac/rag-semantic-kernel-mongodb-vcore?devcontainer_path=.devcontainer/devcontainer.json)
 
-## Running the web app
+## Running the web app locally
 
 To run the Quart application, follow these steps:
 
@@ -85,7 +85,13 @@ Navigate to project homepage [http://127.0.0.1:5000/](http://127.0.0.1:5000/) or
 
 https://github.com/john0isaac/rag-semantic-kernel-mongodb-vcore/assets/64026625/8a7556d6-2b54-40b5-825b-06d6efd4d1ca
 
-## Deployment
+## Step-by-Step Deployment
+
+Follow this guide 👉 [Build RAG Chat App using Azure Cosmos DB for MongoDB vCore and Azure OpenAI: Step-by-Step Guide](https://techcommunity.microsoft.com/t5/educator-developer-blog/build-rag-chat-app-using-azure-cosmos-db-for-mongodb-vcore-and/ba-p/4055852)
+
+![architecture-thumbnail](https://github.com/john0isaac/rag-semantic-kernel-mongodb-vcore/assets/64026625/e0a4a412-55bf-4032-9cf7-82936419c746)
+
+## `azd` Deployment
 
 ![architecture-thumbnail](https://github.com/john0isaac/rag-semantic-kernel-mongodb-vcore/assets/64026625/7ce8ae6e-0424-47ce-b0a3-9be072eda27f)
 
@@ -154,7 +160,7 @@ The Python scrips that adds the data is configured to accept any JSON file with 
     python ./scripts/add_data.py --file="./data/text-sample.json" --id-field=id --text-field=contnet --description-field=title
     ```
 
-### Example for Step by step Manual Deployment
+### Example for Step-by-step Manual Deployment
 
 1. Add your JSON data to the [data folder](./src/data/).
 
