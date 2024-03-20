@@ -138,7 +138,7 @@ module keyVaultSecrets './core/security/keyvault-secret.bicep' = {
   params: {
     name: 'mongoConnectionStr'
     keyVaultName: keyVault.outputs.name
-    secretValue: 'mongodb+srv://${mongoAdminUser}:${mongoAdminPassword}@${mongoClusterName}.global.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000'
+    secretValue: replace(replace(mongoCluster.outputs.connectionStringKey, '<user>', mongoAdminUser), '<password>', mongoAdminPassword)
   }
 }
 
