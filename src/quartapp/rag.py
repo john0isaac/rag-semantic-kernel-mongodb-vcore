@@ -1,58 +1,48 @@
 import os
-import semantic_kernel as sk
-from semantic_kernel import Kernel, KernelFunction
-from semantic_kernel.connectors.ai.open_ai import (
+from typing import Any
+
+import semantic_kernel as sk  # type: ignore [import-untyped]
+from semantic_kernel import Kernel, KernelFunction, PromptTemplateConfig
+from semantic_kernel.connectors.ai.open_ai import (  # type: ignore [import-untyped]
     AzureChatCompletion,
     AzureTextEmbedding,
+    OpenAITextPromptExecutionSettings,
 )
-from semantic_kernel.connectors.memory.azure_cosmosdb import (
+from semantic_kernel.connectors.memory.azure_cosmosdb import (  # type: ignore [import-untyped]
     AzureCosmosDBMemoryStore,
 )
-from semantic_kernel.memory.semantic_text_memory import SemanticTextMemory
-from semantic_kernel.memory.memory_store_base import MemoryStoreBase
-from semantic_kernel.core_plugins.text_memory_plugin import TextMemoryPlugin
-
-from semantic_kernel.prompt_template.input_variable import InputVariable
-import semantic_kernel.connectors.ai.open_ai as sk_oai
-
+from semantic_kernel.core_plugins.text_memory_plugin import TextMemoryPlugin  # type: ignore [import-untyped]
+from semantic_kernel.kernel import FunctionResult  # type: ignore [import-untyped]
+from semantic_kernel.memory.memory_store_base import MemoryStoreBase  # type: ignore [import-untyped]
+from semantic_kernel.memory.semantic_text_memory import (  # type: ignore [import-untyped]
+    MemoryQueryResult,
+    SemanticTextMemory,
+)
+from semantic_kernel.prompt_template.input_variable import InputVariable  # type: ignore [import-untyped]
 
 # collection name will be used multiple times in the code so we store it in a variable
 collection_name = os.environ.get("AZCOSMOS_CONTAINER_NAME")
 
 # Vector search index parameters
 index_name = "VectorSearchIndex"
-vector_dimensions = (
-    1536  # text-embedding-ada-002 uses a 1536-dimensional embedding vector
-)
+vector_dimensions = 1536  # text-embedding-ada-002 uses a 1536-dimensional embedding vector
 num_lists = 1
 similarity = "COS"  # cosine distance
 
 
 async def prompt_with_rag_or_vector(query_term: str, option: str) -> str:
-    """
-    This asynchronous function initializes a kernel and a memory store, optionally updates the memory store with data from a file,
-    and performs a search based on the provided query term using either the RAG (Retrieval-Augmented Generation) method or vector search.
-
-    Args:
-        query_term (str): The term to be searched for.
-        option (str): The search method to be used. Must be either 'rag' or 'vector'.
-
-    Returns:
-        str: The function returns the text response.
-
-    Raises:
-        ValueError: If an invalid option is provided.
-    """
-    kernel = initialize_sk_chat_embedding()
+    kernel: Kernel = initialize_sk_chat_embedding()
     memory, _ = await initialize_sk_memory_store(kernel)
 
     if option == "rag":
-        chat_function = await grounded_response(kernel)
-        result = await perform_rag_search(kernel, memory, chat_function, query_term)
-        return result
+        chat_function: KernelFunction = await grounded_response(kernel)
+        rag_result: FunctionResult = await perform_rag_search(kernel, memory, chat_function, query_term)
+        rag_result_str: str = rag_result.__str__()
+        return rag_result_str
     if option == "vector":
-        result = await perform_vector_search(memory, query_term)
-        return result[0].text if result else "Not found!"
+        result: list[MemoryQueryResult] = await perform_vector_search(memory, query_term)
+        vector_result: str = result[0].text if result else "Not found!"
+        return vector_result
     raise ValueError("Invalid option. Please choose either 'rag' or 'only-vector'.")
 
 
@@ -74,9 +64,7 @@ def initialize_sk_chat_embedding() -> Kernel:
     print("Added Azure OpenAI Chat Service...")
 
     # adding azure openai text embedding service
-    embedding_model_deployment_name = os.environ.get(
-        "AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME"
-    )
+    embedding_model_deployment_name = os.environ.get("AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME")
 
     kernel.add_service(
         AzureTextEmbedding(
@@ -108,9 +96,7 @@ async def initialize_sk_memory_store(
         similarity=similarity,
     )
     print("Finished updating Azure Cosmos DB Memory Store...")
-    memory = SemanticTextMemory(
-        storage=store, embeddings_generator=kernel.get_service("text_embedding")
-    )
+    memory = SemanticTextMemory(storage=store, embeddings_generator=kernel.get_service("text_embedding"))
     kernel.import_plugin_from_object(TextMemoryPlugin(memory), "TextMemoryPluginACDB")
     print("Registered Azure Cosmos DB Memory Store...")
     return memory, store
@@ -127,29 +113,25 @@ async def grounded_response(kernel: Kernel) -> KernelFunction:
 
     chat_model_deployment_name = os.environ.get("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME")
 
-    execution_settings = sk_oai.OpenAITextPromptExecutionSettings(
+    execution_settings = OpenAITextPromptExecutionSettings(
         service_id="chat_completion",
         ai_model_id=chat_model_deployment_name,
         max_tokens=500,
         temperature=0.0,
         top_p=0.5,
     )
-    chat_prompt_template_config = sk.PromptTemplateConfig(
+    chat_prompt_template_config = PromptTemplateConfig(
         template=prompt,
         name="grounded_response",
         template_format="semantic-kernel",
         input_variables=[
-            InputVariable(
-                name="db_record", description="The database record", is_required=True
-            ),
-            InputVariable(
-                name="query_term", description="The user input", is_required=True
-            ),
+            InputVariable(name="db_record", description="The database record", is_required=True),
+            InputVariable(name="query_term", description="The user input", is_required=True),
         ],
         execution_settings=execution_settings,
     )
 
-    chat_function = kernel.create_function_from_prompt(
+    chat_function: KernelFunction = kernel.create_function_from_prompt(
         prompt=prompt,
         function_name="ChatGPTFunc",
         plugin_name="chatGPTPlugin",
@@ -163,16 +145,14 @@ async def perform_rag_search(
     memory: SemanticTextMemory,
     chat_function: KernelFunction,
     query_term: str,
-) -> str:
-    result = await perform_vector_search(memory, query_term)
-    db_record = (
-        result[0].additional_metadata if result else "The requested data is not Found."
-    )
+) -> FunctionResult:
+    result: list[MemoryQueryResult] = await perform_vector_search(memory, query_term)
+    db_record: str = result[0].additional_metadata if result else "The requested data is not Found."
     return await kernel.invoke(
         chat_function,
         sk.KernelArguments(query_term=query_term, db_record=db_record),
     )
 
 
-async def perform_vector_search(memory: SemanticTextMemory, query_term: str) -> list:
+async def perform_vector_search(memory: SemanticTextMemory, query_term: str) -> list[MemoryQueryResult] | Any:
     return await memory.search(collection_name, query_term)

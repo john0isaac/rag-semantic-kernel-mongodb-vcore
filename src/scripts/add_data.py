@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 import json
 import os
-from argparse import Namespace, ArgumentParser
-from semantic_kernel.memory.semantic_text_memory import SemanticTextMemory
-from semantic_kernel.memory.memory_store_base import MemoryStoreBase
+from argparse import ArgumentParser, Namespace
+
+from semantic_kernel.memory.memory_store_base import MemoryStoreBase  # type: ignore [import-untyped]
+from semantic_kernel.memory.semantic_text_memory import SemanticTextMemory  # type: ignore [import-untyped]
 
 from quartapp.rag import initialize_sk_chat_embedding, initialize_sk_memory_store
 
@@ -40,11 +41,10 @@ async def upsert_data_to_memory_store(
     text_field_name: str,
     description_field_name: str,
 ) -> None:
-
     # collection name will be used multiple times in the code so we store it in a variable
     collection_name = os.environ.get("AZCOSMOS_CONTAINER_NAME")
 
-    with open(file=data_file_path, mode="r", encoding="utf-8") as f:
+    with open(file=data_file_path, encoding="utf-8") as f:
         data = json.load(f)
         n = 0
         for item in data:
@@ -52,11 +52,7 @@ async def upsert_data_to_memory_store(
             # check if the item already exists in the memory store
             # if the id doesn't exist, it throws an exception
             try:
-                already_created = bool(
-                    await store.get(
-                        collection_name, item[id_field_name], with_embedding=True
-                    )
-                )
+                already_created = bool(await store.get(collection_name, item[id_field_name], with_embedding=True))
             except Exception:
                 already_created = False
             # if the record doesn't exist, we generate embeddings and save it to the database

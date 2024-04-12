@@ -1,0 +1,4 @@
+semantic-kernel==0.9.1b1
+python-dotenv
+Quart
+Hypercorn
