@@ -40,7 +40,7 @@ To run the Quart application, follow these steps:
     source .venv/bin/activate
     ```
 
-    >**Note** - In Windows, the `venv` does not have a `bin` directory. Therefore, you'd use the analogous command shown below:
+    >**Note** - In Windows, the `.venv` does not have a `bin` directory. Therefore, you'd use the analogous command shown below:
 
     ```bash
     source .venv\Scripts\activate

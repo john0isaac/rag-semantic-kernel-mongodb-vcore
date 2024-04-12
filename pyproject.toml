@@ -14,4 +14,4 @@ target-version = ["py312"]
 [tool.mypy]
 check_untyped_defs = true
 python_version = 3.12
-exclude = ["venv/*", ".venv/*"]
+exclude = [".venv/*"]
