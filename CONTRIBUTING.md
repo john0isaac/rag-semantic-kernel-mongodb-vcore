@@ -51,26 +51,60 @@ chances of your issue being dealt with quickly:
 * **Suggest a Fix** - if you can't fix the bug yourself, perhaps you can point to what might be
   causing the problem (line of code or commit)
 
-You can file new issues by providing the above information at the corresponding repository's issues link: https://github.com/[organization-name]/[repository-name]/issues/new].
+You can file new issues by providing the above information at the corresponding repository's issues link: https://github.com/john0isaac/rag-semantic-kernel-mongodb-vcore/issues.
 
 ### <a name="submit-pr"></a> Submitting a Pull Request (PR)
 Before you submit your Pull Request (PR) consider the following guidelines:
 
-* Search the repository (https://github.com/[organization-name]/[repository-name]/pulls) for an open or closed PR
+* Search the repository (https://github.com/john0isaac/rag-semantic-kernel-mongodb-vcore/pulls) for an open or closed PR
   that relates to your submission. You don't want to duplicate effort.
 
-* Make your changes in a new git fork:
-
+* Make your changes in a new git fork
+* Follow [Code style conventions](#style)
 * Commit your changes using a descriptive commit message
-* Push your fork to GitHub:
-* In GitHub, create a pull request
-* If we suggest changes then:
-  * Make the required updates.
-  * Rebase your fork and force push to your GitHub repository (this will update your Pull Request):
+* Push your fork to GitHub
+* In GitHub, create a pull request to the `main` branch of the repository
+* Ask a maintainer to review your PR and address any comments they might have
 
-    ```shell
-    git rebase master -i
-    git push -f
-    ```
+## <a name="tests"></a> Setting up the development environment
+
+Install the development dependencies:
+
+```
+python3 -m pip install -r requirements-dev.txt
+```
+
+Install the pre-commit hooks:
+
+```
+pre-commit install
+```
+
+## <a name="style"></a> Code Style
+
+This codebase includes several languages: Python, Bicep, and Bash.
+Code should follow the standard conventions of each language.
+
+For Python, you can enforce the conventions using `ruff` and `black`.
+
+Install the development dependencies:
+
+```
+python3 -m pip install -r requirements-dev.txt
+```
+
+Run `ruff` to lint a file:
+
+```
+python3 -m ruff <path-to-file>
+```
+
+Run `black` to format a file:
+
+```
+python3 -m black <path-to-file>
+```
+
+If you followed the steps above to install the pre-commit hooks, then you can just wait for those hooks to run `ruff` and `black` for you.
 
 That's it! Thank you for your contribution!
