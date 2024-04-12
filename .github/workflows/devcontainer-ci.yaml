@@ -2,12 +2,12 @@ name: Check Dev Container
 
 on:
   push:
-    branches: [ 'main' ]
+    branches: [ main ]
     paths:
       - ".devcontainer/**"
       - ".github/workflows/devcontainer-ci.yaml"
   pull_request:
-    branches: [ 'main' ]
+    branches: [ main ]
     paths:
       - ".devcontainer/**"
       - ".github/workflows/devcontainer-ci.yaml"
