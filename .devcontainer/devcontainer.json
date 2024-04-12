@@ -20,7 +20,8 @@
           "ms-python.python",
           "ms-azuretools.azure-dev",
           "ms-azuretools.vscode-bicep",
-          "ms-toolsai.jupyter"
+          "ms-toolsai.jupyter",
+          "esbenp.prettier-vscode"
         ]
       }
     }
