@@ -164,7 +164,6 @@ module web 'core/host/appservice.bicep' = {
       AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME: embeddingDeploymentName
       AZURE_OPENAI_API_KEY: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=cognitiveServiceKey)'
       AZCOSMOS_CONNSTR: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=mongoConnectionStr)'
-      AZCOSMOS_API: 'mongo-vcore'
       AZCOSMOS_DATABASE_NAME: 'sk_database'
       AZCOSMOS_CONTAINER_NAME: 'sk_collection'
     }

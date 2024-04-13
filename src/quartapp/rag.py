@@ -87,7 +87,7 @@ async def initialize_sk_memory_store(
     # currently, semantic kernel only supports the ivf vector kind
     store = await AzureCosmosDBMemoryStore.create(
         cosmos_connstr=os.environ.get("AZCOSMOS_CONNSTR"),
-        cosmos_api=os.environ.get("AZCOSMOS_API"),
+        cosmos_api="mongo-vcore",
         database_name=os.environ.get("AZCOSMOS_DATABASE_NAME"),
         collection_name=collection_name,
         index_name=index_name,
