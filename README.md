@@ -61,7 +61,7 @@ To run the Quart application, follow these steps:
     >**Note** - In Windows, the `.venv` does not have a `bin` directory. Therefore, you'd use the analogous command shown below:
 
     ```bash
-    source .venv\Scripts\activate
+    source .venv/Scripts/activate
     ```
 
 1. **Install the dependencies:**
@@ -175,7 +175,7 @@ The Python scrips that adds the data is configured to accept any JSON file with 
 - Description field: This is the name of the description field that cosmos will store along with the embeddings. `--description-field=title` or `-desc title`
 
     ```bash
-    python ./scripts/add_data.py --file="./data/text-sample.json" --id-field=id --text-field=contnet --description-field=title
+    python ./scripts/add_data.py --file="./data/text-sample.json" --id-field=id --text-field=content --description-field=title
     ```
 
 ### Example for Step-by-step Manual Deployment
@@ -195,7 +195,7 @@ The Python scrips that adds the data is configured to accept any JSON file with 
 1. In the SSH terminal, run the following command with the changed values to suit your data:
 
     ```bash
-    python ./scripts/add_data.py --file="./data/text-sample.json" --id-field=id --text-field=contnet --description-field=title
+    python ./scripts/add_data.py --file="./data/text-sample.json" --id-field=id --text-field=content --description-field=title
     ```
 
 ### Example for `azd` Deployment
@@ -215,5 +215,5 @@ The Python scrips that adds the data is configured to accept any JSON file with 
 1. In the SSH terminal, run the following command with the changed values to suit your data:
 
     ```bash
-    python ./scripts/add_data.py --file="./data/text-sample.json" --id-field=id --text-field=contnet --description-field=title
+    python ./scripts/add_data.py --file="./data/text-sample.json" --id-field=id --text-field=content --description-field=title
     ```
