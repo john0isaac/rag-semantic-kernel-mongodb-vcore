@@ -1,8 +1,7 @@
 import os
 from typing import Any
 
-import semantic_kernel as sk  # type: ignore [import-untyped]
-from semantic_kernel import Kernel, KernelFunction, PromptTemplateConfig
+from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import (  # type: ignore [import-untyped]
     AzureChatCompletion,
     AzureTextEmbedding,
@@ -12,12 +11,14 @@ from semantic_kernel.connectors.memory.azure_cosmosdb import (  # type: ignore [
     AzureCosmosDBMemoryStore,
 )
 from semantic_kernel.core_plugins.text_memory_plugin import TextMemoryPlugin  # type: ignore [import-untyped]
+from semantic_kernel.functions import KernelArguments, KernelFunction
 from semantic_kernel.kernel import FunctionResult  # type: ignore [import-untyped]
 from semantic_kernel.memory.memory_store_base import MemoryStoreBase  # type: ignore [import-untyped]
 from semantic_kernel.memory.semantic_text_memory import (  # type: ignore [import-untyped]
     MemoryQueryResult,
     SemanticTextMemory,
 )
+from semantic_kernel.prompt_template import PromptTemplateConfig
 from semantic_kernel.prompt_template.input_variable import InputVariable  # type: ignore [import-untyped]
 
 # collection name will be used multiple times in the code so we store it in a variable
@@ -47,7 +48,7 @@ async def prompt_with_rag_or_vector(query_term: str, option: str) -> str:
 
 
 def initialize_sk_chat_embedding() -> Kernel:
-    kernel = sk.Kernel()
+    kernel = Kernel()
     # adding azure openai chat service
     chat_model_deployment_name = os.environ.get("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME")
     endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT")
@@ -97,7 +98,7 @@ async def initialize_sk_memory_store(
     )
     print("Finished updating Azure Cosmos DB Memory Store...")
     memory = SemanticTextMemory(storage=store, embeddings_generator=kernel.get_service("text_embedding"))
-    kernel.import_plugin_from_object(TextMemoryPlugin(memory), "TextMemoryPluginACDB")
+    kernel.add_plugin(TextMemoryPlugin(memory), "TextMemoryPluginACDB")
     print("Registered Azure Cosmos DB Memory Store...")
     return memory, store
 
@@ -131,8 +132,7 @@ async def grounded_response(kernel: Kernel) -> KernelFunction:
         execution_settings=execution_settings,
     )
 
-    chat_function: KernelFunction = kernel.create_function_from_prompt(
-        prompt=prompt,
+    chat_function: KernelFunction = kernel.add_function(
         function_name="ChatGPTFunc",
         plugin_name="chatGPTPlugin",
         prompt_template_config=chat_prompt_template_config,
@@ -150,7 +150,7 @@ async def perform_rag_search(
     db_record: str = result[0].additional_metadata if result else "The requested data is not Found."
     return await kernel.invoke(
         chat_function,
-        sk.KernelArguments(query_term=query_term, db_record=db_record),
+        KernelArguments(query_term=query_term, db_record=db_record),
     )
 
 
