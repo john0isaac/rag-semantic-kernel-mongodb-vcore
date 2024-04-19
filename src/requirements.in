@@ -1,4 +1,4 @@
-semantic-kernel==0.9.5b1
+semantic-kernel==0.9.6b1
 python-dotenv
 Quart
 Hypercorn
