@@ -8,3 +8,4 @@ pip-tools
 mypy
 pytest
 pytest-asyncio
+pytest-cov
