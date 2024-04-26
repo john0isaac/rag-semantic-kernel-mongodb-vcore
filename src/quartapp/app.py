@@ -72,13 +72,13 @@ def create_app(test_config=None) -> CustomQuart:
                 return jsonify({"answer": str(vector_response[0].text)})
             else:
                 return (
-                    jsonify({"error": "Invalid option. Please choose either 'rag' or 'only-vector'."}),
+                    jsonify({"answer": "Invalid option. Please choose either 'rag' or 'only-vector'."}),
                     400,
                 )
 
         except ValueError as e:
             logging.error(f"Error: {e}")
-            return jsonify({"error": f"Error: {e}"}), 400
+            return jsonify({"answer": f"Error: {e}"}), 400
 
     return app
 
