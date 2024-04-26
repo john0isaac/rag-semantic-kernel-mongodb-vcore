@@ -17,12 +17,16 @@ from quartapp.rag import (
 )
 
 
-class CustomQuart(Quart):  # types: ignore
+class SKernel:
+    def __init__(self, sk_kernel: Kernel, sk_memory: SemanticTextMemory, sk_function: KernelFunction) -> None:
+        self.sk_kernel = sk_kernel
+        self.sk_memory = sk_memory
+        self.sk_function = sk_function
+
+
+class CustomQuart(Quart, SKernel):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.sk_kernel: Kernel
-        self.sk_memory: SemanticTextMemory
-        self.sk_function: KernelFunction
 
 
 def create_app(test_config=None) -> CustomQuart:
@@ -41,7 +45,7 @@ def create_app(test_config=None) -> CustomQuart:
         current_app.logger.info("Serving the app...")
 
     @app.route("/hello", methods=["GET"])
-    async def hello() -> str:
+    async def hello() -> Any:
         return jsonify({"answer": "Hello, World!"})
 
     @app.route("/", methods=["GET"])
@@ -59,20 +63,22 @@ def create_app(test_config=None) -> CustomQuart:
 
         try:
             if rag_or_vector == "rag":
-                rag_response: FunctionResult = await perform_rag_search(
+                rag_response: FunctionResult | None = await perform_rag_search(
                     app.sk_kernel, app.sk_memory, app.sk_function, query_term
                 )
                 return jsonify({"answer": str(rag_response)})
             elif rag_or_vector == "vector":
                 vector_response: list[MemoryQueryResult] = await perform_vector_search(app.sk_memory, query_term)
                 return jsonify({"answer": str(vector_response[0].text)})
+            else:
+                return (
+                    jsonify({"error": "Invalid option. Please choose either 'rag' or 'only-vector'."}),
+                    400,
+                )
 
         except ValueError as e:
-            logging.exception("Exception in %s: %s", "/chat", e)
-            return (
-                jsonify({"error": "Invalid option. Please choose either 'rag' or 'only-vector'."}),
-                400,
-            )
+            logging.error(f"Error: {e}")
+            return jsonify({"error": f"Error: {e}"}), 400
 
     return app
 
