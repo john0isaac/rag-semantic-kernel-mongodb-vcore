@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import logging
 import os
 from argparse import ArgumentParser, Namespace
 
@@ -7,6 +8,12 @@ from semantic_kernel.memory.memory_store_base import MemoryStoreBase  # type: ig
 from semantic_kernel.memory.semantic_text_memory import SemanticTextMemory  # type: ignore [import-untyped]
 
 from quartapp.rag import initialize_sk_chat_embedding, initialize_sk_memory_store
+
+logging.basicConfig(
+    handlers=[logging.StreamHandler()],
+    format="[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
 
 
 async def add_data(input_args: Namespace) -> None:
@@ -30,7 +37,7 @@ async def add_data(input_args: Namespace) -> None:
             input_args.text_field,
             input_args.description_field,
         )
-    print("Added the data successfully...")
+    logging.info("Successfully Added the data...")
 
 
 async def upsert_data_to_memory_store(
@@ -42,7 +49,7 @@ async def upsert_data_to_memory_store(
     description_field_name: str,
 ) -> None:
     # collection name will be used multiple times in the code so we store it in a variable
-    collection_name = os.environ.get("AZCOSMOS_CONTAINER_NAME")
+    collection_name: str = os.environ.get("AZCOSMOS_CONTAINER_NAME") or "sk_collection"
 
     with open(file=data_file_path, encoding="utf-8") as f:
         data = json.load(f)
