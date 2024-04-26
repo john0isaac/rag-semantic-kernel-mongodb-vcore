@@ -25,8 +25,12 @@ class CustomQuart(Quart):  # types: ignore
         self.sk_function: KernelFunction
 
 
-def create_app() -> CustomQuart:
+def create_app(test_config=None) -> CustomQuart:
     app = CustomQuart(__name__, template_folder="../frontend", static_folder="../frontend/static")
+
+    if test_config:
+        # load the test config if passed in
+        app.config.from_mapping(test_config)
 
     @app.before_serving
     async def initialize_sk() -> None:
@@ -35,6 +39,10 @@ def create_app() -> CustomQuart:
         app.sk_function = await grounded_response(app.sk_kernel)
 
         current_app.logger.info("Serving the app...")
+
+    @app.route("/hello", methods=["GET"])
+    async def hello() -> str:
+        return jsonify({"answer": "Hello, World!"})
 
     @app.route("/", methods=["GET"])
     async def landing_page() -> Any:
