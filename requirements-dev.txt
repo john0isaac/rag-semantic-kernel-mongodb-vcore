@@ -6,3 +6,6 @@ black
 pre-commit
 pip-tools
 mypy
+pytest
+pytest-asyncio
+pytest-cov

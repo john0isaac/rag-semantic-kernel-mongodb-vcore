@@ -4,6 +4,11 @@ from typing import Any
 from quart import Quart, current_app, jsonify, render_template, request
 
 from quartapp.rag import (
+    FunctionResult,
+    Kernel,
+    KernelFunction,
+    MemoryQueryResult,
+    SemanticTextMemory,
     grounded_response,
     initialize_sk_chat_embedding,
     initialize_sk_memory_store,
@@ -11,19 +16,25 @@ from quartapp.rag import (
     perform_vector_search,
 )
 
-# logging.basicConfig(level=logging.DEBUG)
+
+class SKernel:
+    def __init__(self, sk_kernel: Kernel, sk_memory: SemanticTextMemory, sk_function: KernelFunction) -> None:
+        self.sk_kernel = sk_kernel
+        self.sk_memory = sk_memory
+        self.sk_function = sk_function
 
 
-class CustomQuart(Quart):  # types: ignore
+class CustomQuart(Quart, SKernel):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.sk_kernel = None
-        self.sk_memory = None
-        self.sk_function = None
 
 
-def create_app() -> CustomQuart:
+def create_app(test_config=None) -> CustomQuart:
     app = CustomQuart(__name__, template_folder="../frontend", static_folder="../frontend/static")
+
+    if test_config:
+        # load the test config if passed in
+        app.config.from_mapping(test_config)
 
     @app.before_serving
     async def initialize_sk() -> None:
@@ -32,6 +43,10 @@ def create_app() -> CustomQuart:
         app.sk_function = await grounded_response(app.sk_kernel)
 
         current_app.logger.info("Serving the app...")
+
+    @app.route("/hello", methods=["GET"])
+    async def hello() -> Any:
+        return jsonify({"answer": "Hello, World!"})
 
     @app.route("/", methods=["GET"])
     async def landing_page() -> Any:
@@ -48,18 +63,22 @@ def create_app() -> CustomQuart:
 
         try:
             if rag_or_vector == "rag":
-                rag_response: str = await perform_rag_search(app.sk_kernel, app.sk_memory, app.sk_function, query_term)
+                rag_response: FunctionResult | None = await perform_rag_search(
+                    app.sk_kernel, app.sk_memory, app.sk_function, query_term
+                )
                 return jsonify({"answer": str(rag_response)})
             elif rag_or_vector == "vector":
-                vector_response = await perform_vector_search(app.sk_memory, query_term)
-                vector_response = vector_response[0].text if vector_response else "Not found!"
-                return jsonify({"answer": str(vector_response)})
+                vector_response: list[MemoryQueryResult] = await perform_vector_search(app.sk_memory, query_term)
+                return jsonify({"answer": str(vector_response[0].text)})
+            else:
+                return (
+                    jsonify({"answer": "Invalid option. Please choose either 'rag' or 'only-vector'."}),
+                    400,
+                )
+
         except ValueError as e:
-            logging.exception("Exception in %s: %s", "/chat", e)
-            return (
-                jsonify({"error": "Invalid option. Please choose either 'rag' or 'only-vector'."}),
-                400,
-            )
+            logging.error(f"Error: {e}")
+            return jsonify({"answer": f"Error: {e}"}), 400
 
     return app
 

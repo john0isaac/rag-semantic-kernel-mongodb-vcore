@@ -1,6 +1,7 @@
+import logging
 import os
-from typing import Any
 
+from pymongo.errors import ServerSelectionTimeoutError
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import (  # type: ignore [import-untyped]
     AzureChatCompletion,
@@ -11,7 +12,8 @@ from semantic_kernel.connectors.memory.azure_cosmosdb import (  # type: ignore [
     AzureCosmosDBMemoryStore,
 )
 from semantic_kernel.core_plugins.text_memory_plugin import TextMemoryPlugin  # type: ignore [import-untyped]
-from semantic_kernel.functions import KernelArguments, KernelFunction
+from semantic_kernel.exceptions import FunctionExecutionException, KernelInvokeException, ServiceResponseException
+from semantic_kernel.functions import KernelArguments, KernelFunction, KernelFunctionMetadata
 from semantic_kernel.kernel import FunctionResult  # type: ignore [import-untyped]
 from semantic_kernel.memory.memory_store_base import MemoryStoreBase  # type: ignore [import-untyped]
 from semantic_kernel.memory.semantic_text_memory import (  # type: ignore [import-untyped]
@@ -21,8 +23,15 @@ from semantic_kernel.memory.semantic_text_memory import (  # type: ignore [impor
 from semantic_kernel.prompt_template import PromptTemplateConfig
 from semantic_kernel.prompt_template.input_variable import InputVariable  # type: ignore [import-untyped]
 
+logging.basicConfig(
+    handlers=[logging.StreamHandler()],
+    format="[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+
+
 # collection name will be used multiple times in the code so we store it in a variable
-collection_name = os.environ.get("AZCOSMOS_CONTAINER_NAME")
+collection_name = os.environ.get("AZCOSMOS_CONTAINER_NAME") or "sk_collection"
 
 # Vector search index parameters
 index_name = "VectorSearchIndex"
@@ -38,11 +47,11 @@ async def prompt_with_rag_or_vector(query_term: str, option: str) -> str:
     if option == "rag":
         chat_function: KernelFunction = await grounded_response(kernel)
         rag_result: FunctionResult = await perform_rag_search(kernel, memory, chat_function, query_term)
-        rag_result_str: str = rag_result.__str__()
+        rag_result_str: str = str(rag_result)
         return rag_result_str
     if option == "vector":
         result: list[MemoryQueryResult] = await perform_vector_search(memory, query_term)
-        vector_result: str = result[0].text if result else "Not found!"
+        vector_result: str = str(result[0].text)
         return vector_result
     raise ValueError("Invalid option. Please choose either 'rag' or 'only-vector'.")
 
@@ -50,9 +59,9 @@ async def prompt_with_rag_or_vector(query_term: str, option: str) -> str:
 def initialize_sk_chat_embedding() -> Kernel:
     kernel = Kernel()
     # adding azure openai chat service
-    chat_model_deployment_name = os.environ.get("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME")
-    endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT")
-    api_key = os.environ.get("AZURE_OPENAI_API_KEY")
+    chat_model_deployment_name = os.environ.get("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME") or "chat-deployment"
+    endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT") or "https://test-endpoint.openai.com/"
+    api_key = os.environ.get("AZURE_OPENAI_API_KEY") or "VerySecretApiKey"
 
     kernel.add_service(
         AzureChatCompletion(
@@ -62,10 +71,12 @@ def initialize_sk_chat_embedding() -> Kernel:
             api_key=api_key,
         )
     )
-    print("Added Azure OpenAI Chat Service...")
+    logging.info("Added Azure OpenAI Chat Service...")
 
     # adding azure openai text embedding service
-    embedding_model_deployment_name = os.environ.get("AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME")
+    embedding_model_deployment_name = (
+        os.environ.get("AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME") or "embedding-deployment"
+    )
 
     kernel.add_service(
         AzureTextEmbedding(
@@ -75,7 +86,7 @@ def initialize_sk_chat_embedding() -> Kernel:
             api_key=api_key,
         )
     )
-    print("Added Azure OpenAI Embedding Generation Service...")
+    logging.info("Added Azure OpenAI Embedding Generation Service...")
 
     return kernel
 
@@ -83,23 +94,39 @@ def initialize_sk_chat_embedding() -> Kernel:
 async def initialize_sk_memory_store(
     kernel: Kernel,
 ) -> tuple[SemanticTextMemory, MemoryStoreBase]:
-    print("Creating or updating Azure Cosmos DB Memory Store...")
     # create azure cosmos db for mongo db vcore api store and collection with vector ivf
     # currently, semantic kernel only supports the ivf vector kind
-    store = await AzureCosmosDBMemoryStore.create(
-        cosmos_connstr=os.environ.get("AZCOSMOS_CONNSTR"),
-        cosmos_api="mongo-vcore",
-        database_name=os.environ.get("AZCOSMOS_DATABASE_NAME"),
-        collection_name=collection_name,
-        index_name=index_name,
-        vector_dimensions=vector_dimensions,
-        num_lists=num_lists,
-        similarity=similarity,
-    )
-    print("Finished updating Azure Cosmos DB Memory Store...")
-    memory = SemanticTextMemory(storage=store, embeddings_generator=kernel.get_service("text_embedding"))
-    kernel.add_plugin(TextMemoryPlugin(memory), "TextMemoryPluginACDB")
-    print("Registered Azure Cosmos DB Memory Store...")
+
+    try:
+        logging.info("Creating or updating Azure Cosmos DB Memory Store...")
+        store = await AzureCosmosDBMemoryStore.create(
+            cosmos_connstr=os.environ.get("AZCOSMOS_CONNSTR") or "connection-string",
+            cosmos_api="mongo-vcore",
+            database_name=os.environ.get("AZCOSMOS_DATABASE_NAME") or "sk_database",
+            collection_name=collection_name,
+            index_name=index_name,
+            vector_dimensions=vector_dimensions,
+            num_lists=num_lists,
+            similarity=similarity,
+        )
+        logging.info("Finished updating Azure Cosmos DB Memory Store...")
+
+        memory = SemanticTextMemory(storage=store, embeddings_generator=kernel.get_service("text_embedding"))
+        kernel.add_plugin(TextMemoryPlugin(memory), "TextMemoryPluginACDB")
+
+        logging.info("Successfully Registered Azure Cosmos DB Memory Store...")
+    except ServerSelectionTimeoutError:
+        logging.error("Failed to Create or Update Azure Cosmos DB Memory Store...")
+        logging.info("Creating or Updating Volatile Memory Store...")
+
+        from semantic_kernel.memory.volatile_memory_store import VolatileMemoryStore
+
+        store = VolatileMemoryStore()
+        memory = SemanticTextMemory(storage=store, embeddings_generator=kernel.get_service("text_embedding"))
+        kernel.add_plugin(TextMemoryPlugin(memory), "TextMemoryPluginACDB")
+
+        logging.info("Successfully Registered Volatile Memory Store...")
+
     return memory, store
 
 
@@ -137,6 +164,7 @@ async def grounded_response(kernel: Kernel) -> KernelFunction:
         plugin_name="chatGPTPlugin",
         prompt_template_config=chat_prompt_template_config,
     )
+
     return chat_function
 
 
@@ -145,14 +173,37 @@ async def perform_rag_search(
     memory: SemanticTextMemory,
     chat_function: KernelFunction,
     query_term: str,
-) -> FunctionResult:
-    result: list[MemoryQueryResult] = await perform_vector_search(memory, query_term)
-    db_record: str = result[0].additional_metadata if result else "The requested data is not Found."
-    return await kernel.invoke(
-        chat_function,
-        KernelArguments(query_term=query_term, db_record=db_record),
-    )
+) -> FunctionResult | None:
+    vector_search_result: list[MemoryQueryResult] = await perform_vector_search(memory, query_term)
+    db_record: str = str(vector_search_result[0].additional_metadata)
+
+    try:
+        return await kernel.invoke(
+            chat_function,
+            KernelArguments(query_term=query_term, db_record=db_record),
+        )
+
+    except (ServiceResponseException, FunctionExecutionException, KernelInvokeException):
+        return FunctionResult(
+            function=KernelFunctionMetadata(name=chat_function.name, is_prompt=chat_function.is_prompt),
+            value="The requested data is not Found.",
+        )
 
 
-async def perform_vector_search(memory: SemanticTextMemory, query_term: str) -> list[MemoryQueryResult] | Any:
-    return await memory.search(collection_name, query_term)
+async def perform_vector_search(memory: SemanticTextMemory, query_term: str) -> list[MemoryQueryResult]:
+    try:
+        vector_search_result = await memory.search(collection_name, query_term)
+    except ServiceResponseException:
+        vector_search_result = [
+            MemoryQueryResult(
+                is_reference=False,
+                external_source_name=None,
+                id="0",
+                description="The requested data is not Found.",
+                text="Not found!",
+                additional_metadata="The requested data is not Found.",
+                embedding=None,
+                relevance=0.0,
+            )
+        ]
+    return vector_search_result
