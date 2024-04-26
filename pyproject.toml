@@ -15,3 +15,11 @@ target-version = ["py312"]
 check_untyped_defs = true
 python_version = 3.12
 exclude = [".venv/*"]
+
+[tool.pytest.ini_options]
+addopts = "-ra --cov"
+testpaths = ["tests"]
+pythonpath = ['src']
+
+[tool.coverage.report]
+show_missing = true
