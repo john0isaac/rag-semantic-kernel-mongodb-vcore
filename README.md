@@ -20,6 +20,9 @@ name: A Python sample for implementing retrieval augmented generation using Azur
 
 A Python sample for implementing retrieval augmented generation using Azure Open AI to generate embeddings, Azure Cosmos DB for MongoDB vCore to perform vector search and semantic kernel. Deployed to Azure App service using Azure Developer CLI (azd).
 
+[![Watch Live Session](https://img.youtube.com/vi/XHJj_M84X28/maxresdefault.jpg)](https://www.youtube.com/watch?v=LiS9CqR0ZSk)
+> 🎥 Click this image to watch the recorded reactor workshop
+
 ## How to use?
 
 1. Create the following resources on Microsoft Azure:
