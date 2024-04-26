@@ -20,6 +20,7 @@ exclude = [".venv/*"]
 addopts = "-ra --cov"
 testpaths = ["tests"]
 pythonpath = ['src']
+filterwarnings = ["ignore::DeprecationWarning"]
 
 [tool.coverage.report]
 show_missing = true
