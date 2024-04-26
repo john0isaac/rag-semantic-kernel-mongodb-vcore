@@ -4,6 +4,11 @@ from typing import Any
 from quart import Quart, current_app, jsonify, render_template, request
 
 from quartapp.rag import (
+    FunctionResult,
+    Kernel,
+    KernelFunction,
+    MemoryQueryResult,
+    SemanticTextMemory,
     grounded_response,
     initialize_sk_chat_embedding,
     initialize_sk_memory_store,
@@ -11,15 +16,13 @@ from quartapp.rag import (
     perform_vector_search,
 )
 
-# logging.basicConfig(level=logging.DEBUG)
-
 
 class CustomQuart(Quart):  # types: ignore
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.sk_kernel = None
-        self.sk_memory = None
-        self.sk_function = None
+        self.sk_kernel: Kernel
+        self.sk_memory: SemanticTextMemory
+        self.sk_function: KernelFunction
 
 
 def create_app() -> CustomQuart:
@@ -48,12 +51,14 @@ def create_app() -> CustomQuart:
 
         try:
             if rag_or_vector == "rag":
-                rag_response: str = await perform_rag_search(app.sk_kernel, app.sk_memory, app.sk_function, query_term)
+                rag_response: FunctionResult = await perform_rag_search(
+                    app.sk_kernel, app.sk_memory, app.sk_function, query_term
+                )
                 return jsonify({"answer": str(rag_response)})
             elif rag_or_vector == "vector":
-                vector_response = await perform_vector_search(app.sk_memory, query_term)
-                vector_response = vector_response[0].text if vector_response else "Not found!"
-                return jsonify({"answer": str(vector_response)})
+                vector_response: list[MemoryQueryResult] = await perform_vector_search(app.sk_memory, query_term)
+                return jsonify({"answer": str(vector_response[0].text)})
+
         except ValueError as e:
             logging.exception("Exception in %s: %s", "/chat", e)
             return (
