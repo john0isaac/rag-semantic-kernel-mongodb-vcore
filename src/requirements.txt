@@ -193,7 +193,7 @@ ruamel-yaml-clib==0.2.8
     # via ruamel-yaml
 scipy==1.13.0
     # via semantic-kernel
-semantic-kernel==0.9.6b1
+semantic-kernel==0.9.8b1
     # via -r src/requirements.in
 six==1.16.0
     # via
