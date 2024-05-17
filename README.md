@@ -1,5 +1,6 @@
 ---
-page_type: sample
+name: RAG using Semantic Kernel with Azure OpenAI and Azure Cosmos DB for MongoDB vCore
+description: A Python sample for implementing retrieval augmented generation using Azure Open AI to generate embeddings, Azure Cosmos DB for MongoDB vCore to perform vector search and semantic kernel. Deployed to Azure App service using Azure Developer CLI (azd).
 languages:
 - azdeveloper
 - python
@@ -11,8 +12,8 @@ products:
 - azure-openai
 - cosmos-db
 - mongodb-vcore
+page_type: sample
 urlFragment: rag-semantic-kernel-mongodb-vcore
-name: A Python sample for implementing retrieval augmented generation using Azure Open AI to generate embeddings, Azure Cosmos DB for MongoDB vCore to perform vector search and semantic kernel. Deployed to Azure App service using Azure Developer CLI (azd).
 ---
 <!-- YAML front-matter schema: https://review.learn.microsoft.com/en-us/help/contribute/samples/process/onboarding?branch=main#supported-metadata-fields-for-readmemd -->
 
