@@ -151,9 +151,12 @@ pybars4==0.9.13
 pydantic==2.7.0
     # via
     #   openai
+    #   pydantic-settings
     #   semantic-kernel
 pydantic-core==2.18.1
     # via pydantic
+pydantic-settings==2.2.1
+    # via semantic-kernel
 pymeta3==0.5.1
     # via pybars4
 pymongo==4.6.3
@@ -161,12 +164,12 @@ pymongo==4.6.3
 python-dotenv==1.0.1
     # via
     #   -r src/requirements.in
-    #   semantic-kernel
+    #   pydantic-settings
 pyyaml==6.0.1
     # via
     #   jsonschema-path
     #   jsonschema-spec
-quart==0.19.5
+quart==0.19.6
     # via -r src/requirements.in
 referencing==0.30.2
     # via
@@ -193,7 +196,7 @@ ruamel-yaml-clib==0.2.8
     # via ruamel-yaml
 scipy==1.13.0
     # via semantic-kernel
-semantic-kernel==0.9.6b1
+semantic-kernel==1.0.2
     # via -r src/requirements.in
 six==1.16.0
     # via
