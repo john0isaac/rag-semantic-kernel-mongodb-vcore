@@ -44,16 +44,12 @@ defusedxml==0.7.1
     # via semantic-kernel
 distro==1.9.0
     # via openai
-dnspython==2.6.1
-    # via pymongo
 flask==3.0.3
     # via quart
 frozenlist==1.4.1
     # via
     #   aiohttp
     #   aiosignal
-grpcio==1.62.1
-    # via semantic-kernel
 h11==0.14.0
     # via
     #   httpcore
@@ -112,8 +108,6 @@ markupsafe==2.1.5
     #   werkzeug
 more-itertools==10.2.0
     # via openapi-core
-motor==3.4.0
-    # via semantic-kernel
 multidict==6.0.5
     # via
     #   aiohttp
@@ -121,9 +115,7 @@ multidict==6.0.5
 nest-asyncio==1.6.0
     # via semantic-kernel
 numpy==1.26.4
-    # via
-    #   scipy
-    #   semantic-kernel
+    # via semantic-kernel
 openai==1.17.0
     # via semantic-kernel
 openapi-core==0.18.2
@@ -159,8 +151,6 @@ pydantic-settings==2.2.1
     # via semantic-kernel
 pymeta3==0.5.1
     # via pybars4
-pymongo==4.6.3
-    # via motor
 python-dotenv==1.0.1
     # via
     #   -r src/requirements.in
@@ -177,8 +167,6 @@ referencing==0.30.2
     #   jsonschema-path
     #   jsonschema-spec
     #   jsonschema-specifications
-regex==2023.12.25
-    # via semantic-kernel
 requests==2.31.0
     # via
     #   jsonschema-path
@@ -194,9 +182,7 @@ ruamel-yaml==0.18.6
     # via prance
 ruamel-yaml-clib==0.2.8
     # via ruamel-yaml
-scipy==1.13.0
-    # via semantic-kernel
-semantic-kernel==1.1.2
+semantic-kernel==1.2.0
     # via -r src/requirements.in
 six==1.16.0
     # via
