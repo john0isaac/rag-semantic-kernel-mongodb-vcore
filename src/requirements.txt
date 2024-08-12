@@ -42,18 +42,18 @@ click==8.1.7
     #   quart
 defusedxml==0.7.1
     # via semantic-kernel
+deprecated==1.2.14
+    # via
+    #   opentelemetry-api
+    #   opentelemetry-semantic-conventions
 distro==1.9.0
     # via openai
-dnspython==2.6.1
-    # via pymongo
 flask==3.0.3
     # via quart
 frozenlist==1.4.1
     # via
     #   aiohttp
     #   aiosignal
-grpcio==1.62.1
-    # via semantic-kernel
 h11==0.14.0
     # via
     #   httpcore
@@ -79,6 +79,8 @@ idna==3.7
     #   httpx
     #   requests
     #   yarl
+importlib-metadata==8.0.0
+    # via opentelemetry-api
 isodate==0.6.1
     # via openapi-core
 itsdangerous==2.1.2
@@ -112,8 +114,6 @@ markupsafe==2.1.5
     #   werkzeug
 more-itertools==10.2.0
     # via openapi-core
-motor==3.4.0
-    # via semantic-kernel
 multidict==6.0.5
     # via
     #   aiohttp
@@ -122,7 +122,7 @@ nest-asyncio==1.6.0
     # via semantic-kernel
 numpy==1.26.4
     # via
-    #   scipy
+    #   pandas
     #   semantic-kernel
 openai==1.17.0
     # via semantic-kernel
@@ -134,8 +134,19 @@ openapi-schema-validator==0.6.2
     #   openapi-spec-validator
 openapi-spec-validator==0.7.1
     # via openapi-core
+opentelemetry-api==1.26.0
+    # via
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
+    #   semantic-kernel
+opentelemetry-sdk==1.26.0
+    # via semantic-kernel
+opentelemetry-semantic-conventions==0.47b0
+    # via opentelemetry-sdk
 packaging==24.0
     # via prance
+pandas==2.2.2
+    # via semantic-kernel
 parse==1.20.1
     # via openapi-core
 pathable==0.4.3
@@ -159,12 +170,14 @@ pydantic-settings==2.2.1
     # via semantic-kernel
 pymeta3==0.5.1
     # via pybars4
-pymongo==4.6.3
-    # via motor
+python-dateutil==2.9.0.post0
+    # via pandas
 python-dotenv==1.0.1
     # via
     #   -r src/requirements.in
     #   pydantic-settings
+pytz==2024.1
+    # via pandas
 pyyaml==6.0.1
     # via
     #   jsonschema-path
@@ -177,8 +190,6 @@ referencing==0.30.2
     #   jsonschema-path
     #   jsonschema-spec
     #   jsonschema-specifications
-regex==2023.12.25
-    # via semantic-kernel
 requests==2.31.0
     # via
     #   jsonschema-path
@@ -194,14 +205,13 @@ ruamel-yaml==0.18.6
     # via prance
 ruamel-yaml-clib==0.2.8
     # via ruamel-yaml
-scipy==1.13.0
-    # via semantic-kernel
-semantic-kernel==1.1.2
+semantic-kernel==1.5.0
     # via -r src/requirements.in
 six==1.16.0
     # via
     #   isodate
     #   prance
+    #   python-dateutil
     #   rfc3339-validator
 sniffio==1.3.1
     # via
@@ -213,8 +223,11 @@ tqdm==4.66.2
 typing-extensions==4.11.0
     # via
     #   openai
+    #   opentelemetry-sdk
     #   pydantic
     #   pydantic-core
+tzdata==2024.1
+    # via pandas
 urllib3==2.2.1
     # via requests
 werkzeug==3.0.2
@@ -222,7 +235,11 @@ werkzeug==3.0.2
     #   flask
     #   openapi-core
     #   quart
+wrapt==1.16.0
+    # via deprecated
 wsproto==1.2.0
     # via hypercorn
 yarl==1.9.4
     # via aiohttp
+zipp==3.20.0
+    # via importlib-metadata
