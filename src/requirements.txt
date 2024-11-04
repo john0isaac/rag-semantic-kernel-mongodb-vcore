@@ -23,6 +23,10 @@ attrs==23.2.0
     #   aiohttp
     #   jsonschema
     #   referencing
+azure-core==1.32.0
+    # via azure-identity
+azure-identity==1.19.0
+    # via semantic-kernel
 blinker==1.7.0
     # via
     #   flask
@@ -32,6 +36,8 @@ certifi==2024.2.2
     #   httpcore
     #   httpx
     #   requests
+cffi==1.17.1
+    # via cryptography
 chardet==5.2.0
     # via prance
 charset-normalizer==3.3.2
@@ -40,20 +46,29 @@ click==8.1.7
     # via
     #   flask
     #   quart
+cloudevents==1.11.0
+    # via semantic-kernel
+cryptography==43.0.3
+    # via
+    #   azure-identity
+    #   msal
+    #   pyjwt
 defusedxml==0.7.1
     # via semantic-kernel
+deprecated==1.2.14
+    # via
+    #   opentelemetry-api
+    #   opentelemetry-semantic-conventions
+deprecation==2.1.0
+    # via cloudevents
 distro==1.9.0
     # via openai
-dnspython==2.6.1
-    # via pymongo
 flask==3.0.3
     # via quart
 frozenlist==1.4.1
     # via
     #   aiohttp
     #   aiosignal
-grpcio==1.62.1
-    # via semantic-kernel
 h11==0.14.0
     # via
     #   httpcore
@@ -79,6 +94,8 @@ idna==3.7
     #   httpx
     #   requests
     #   yarl
+importlib-metadata==8.4.0
+    # via opentelemetry-api
 isodate==0.6.1
     # via openapi-core
 itsdangerous==2.1.2
@@ -112,8 +129,12 @@ markupsafe==2.1.5
     #   werkzeug
 more-itertools==10.2.0
     # via openapi-core
-motor==3.4.0
-    # via semantic-kernel
+msal==1.31.0
+    # via
+    #   azure-identity
+    #   msal-extensions
+msal-extensions==1.2.0
+    # via azure-identity
 multidict==6.0.5
     # via
     #   aiohttp
@@ -121,9 +142,7 @@ multidict==6.0.5
 nest-asyncio==1.6.0
     # via semantic-kernel
 numpy==1.26.4
-    # via
-    #   scipy
-    #   semantic-kernel
+    # via semantic-kernel
 openai==1.17.0
     # via semantic-kernel
 openapi-core==0.18.2
@@ -134,20 +153,35 @@ openapi-schema-validator==0.6.2
     #   openapi-spec-validator
 openapi-spec-validator==0.7.1
     # via openapi-core
+opentelemetry-api==1.27.0
+    # via
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
+    #   semantic-kernel
+opentelemetry-sdk==1.27.0
+    # via semantic-kernel
+opentelemetry-semantic-conventions==0.48b0
+    # via opentelemetry-sdk
 packaging==24.0
-    # via prance
+    # via
+    #   deprecation
+    #   prance
 parse==1.20.1
     # via openapi-core
 pathable==0.4.3
     # via
     #   jsonschema-path
     #   jsonschema-spec
+portalocker==2.10.1
+    # via msal-extensions
 prance==23.6.21.0
     # via semantic-kernel
 priority==2.0.0
     # via hypercorn
 pybars4==0.9.13
     # via semantic-kernel
+pycparser==2.22
+    # via cffi
 pydantic==2.7.0
     # via
     #   openai
@@ -157,10 +191,12 @@ pydantic-core==2.18.1
     # via pydantic
 pydantic-settings==2.2.1
     # via semantic-kernel
+pyjwt[crypto]==2.9.0
+    # via
+    #   msal
+    #   pyjwt
 pymeta3==0.5.1
     # via pybars4
-pymongo==4.6.3
-    # via motor
 python-dotenv==1.0.1
     # via
     #   -r src/requirements.in
@@ -169,7 +205,7 @@ pyyaml==6.0.1
     # via
     #   jsonschema-path
     #   jsonschema-spec
-quart==0.19.6
+quart==0.19.8
     # via -r src/requirements.in
 referencing==0.30.2
     # via
@@ -177,12 +213,12 @@ referencing==0.30.2
     #   jsonschema-path
     #   jsonschema-spec
     #   jsonschema-specifications
-regex==2023.12.25
-    # via semantic-kernel
 requests==2.31.0
     # via
+    #   azure-core
     #   jsonschema-path
     #   jsonschema-spec
+    #   msal
     #   prance
 rfc3339-validator==0.1.4
     # via openapi-schema-validator
@@ -194,12 +230,11 @@ ruamel-yaml==0.18.6
     # via prance
 ruamel-yaml-clib==0.2.8
     # via ruamel-yaml
-scipy==1.13.0
-    # via semantic-kernel
-semantic-kernel==1.1.2
+semantic-kernel==1.13.0
     # via -r src/requirements.in
 six==1.16.0
     # via
+    #   azure-core
     #   isodate
     #   prance
     #   rfc3339-validator
@@ -212,7 +247,10 @@ tqdm==4.66.2
     # via openai
 typing-extensions==4.11.0
     # via
+    #   azure-core
+    #   azure-identity
     #   openai
+    #   opentelemetry-sdk
     #   pydantic
     #   pydantic-core
 urllib3==2.2.1
@@ -222,7 +260,11 @@ werkzeug==3.0.2
     #   flask
     #   openapi-core
     #   quart
+wrapt==1.16.0
+    # via deprecated
 wsproto==1.2.0
     # via hypercorn
 yarl==1.9.4
     # via aiohttp
+zipp==3.20.2
+    # via importlib-metadata
