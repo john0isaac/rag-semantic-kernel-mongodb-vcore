@@ -1,4 +1,7 @@
-semantic-kernel==1.1.2
+semantic-kernel==1.17.1
+openai==1.58.1
+pymongo
+motor
 python-dotenv
 Quart
 Hypercorn

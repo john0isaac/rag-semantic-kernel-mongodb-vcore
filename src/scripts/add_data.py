@@ -49,7 +49,7 @@ async def upsert_data_to_memory_store(
     description_field_name: str,
 ) -> None:
     # collection name will be used multiple times in the code so we store it in a variable
-    collection_name: str = os.environ.get("AZCOSMOS_CONTAINER_NAME") or "sk_collection"
+    collection_name: str = os.environ.get("AZURE_COSMOS_COLLECTION_NAME") or "sk_collection"
 
     with open(file=data_file_path, encoding="utf-8") as f:
         data = json.load(f)

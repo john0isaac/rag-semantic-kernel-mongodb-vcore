@@ -4,10 +4,11 @@ version = "1.0.0"
 description = "Demo Chat Application to demonstrate retrieval augmented generation using Azure Open AI, Azure Cosmos DB for MongoDB vCore, and semantic kernel."
 dependencies = [
     "Quart",
-    "semantic-kernel==0.9.6b1",
+    "semantic-kernel==1.17.1",
+    "openai==1.58.1",
     "python-dotenv",
     "Hypercorn",
-    ]
+]
 
 [build-system]
 requires = ["flit_core<4"]

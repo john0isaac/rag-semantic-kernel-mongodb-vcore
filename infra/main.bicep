@@ -11,11 +11,17 @@ param location string
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
 
+@description('SKU to use for App Service Plan')
+param appServiceSku string
+
 var mongoClusterName = '${uniqueString(resourceGroup.id)}-mvcore'
 var mongoAdminUser = 'admin${uniqueString(resourceGroup.id)}'
 @secure()
 @description('Mongo Server administrator password')
 param mongoAdminPassword string
+
+@description('SKU to use for Cosmos DB for MongoDB vCore Plan')
+param mongoServiceSku string
 
 param openAIDeploymentName string = '${name}-openai'
 param chatGptDeploymentName string = 'chat-gpt'
@@ -109,7 +115,7 @@ module appServicePlan 'core/host/appserviceplan.bicep' = {
     location: location
     tags: tags
     sku: {
-      name: 'B1'
+      name: appServiceSku
     }
     reserved: true
   }
@@ -126,19 +132,19 @@ module mongoCluster 'core/database/cosmos/mongo/cosmos-mongo-cluster.bicep' = {
     administratorLoginPassword: mongoAdminPassword
     storage: 32
     nodeCount: 1
-    sku: 'M25'
+    sku: mongoServiceSku
     allowAzureIPsFirewall: true
   }
 }
 
 module keyVaultSecrets './core/security/keyvault-secret.bicep' = {
   dependsOn: [ mongoCluster ]
-  name: 'keyvault-secret-mongo-connstr'
+  name: 'keyvault-secret-mongo-password'
   scope: resourceGroup
   params: {
-    name: 'mongoConnectionStr'
+    name: 'mongoAdminPassword'
     keyVaultName: keyVault.outputs.name
-    secretValue: replace(replace(mongoCluster.outputs.connectionStringKey, '<user>', mongoAdminUser), '<password>', mongoAdminPassword)
+    secretValue: mongoAdminPassword
   }
 }
 
@@ -157,15 +163,20 @@ module web 'core/host/appservice.bicep' = {
     scmDoBuildDuringDeployment: true
     ftpsState: 'Disabled'
     managedIdentity: true
+    use32BitWorkerProcess: appServiceSku == 'F1'
+    alwaysOn: appServiceSku != 'F1'
     appSettings: {
       AZURE_OPENAI_DEPLOYMENT_NAME: openAIDeploymentName
       AZURE_OPENAI_ENDPOINT: openAi.outputs.endpoint
       AZURE_OPENAI_CHAT_DEPLOYMENT_NAME: chatGptDeploymentName
       AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME: embeddingDeploymentName
       AZURE_OPENAI_API_KEY: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=cognitiveServiceKey)'
-      AZCOSMOS_CONNSTR: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=mongoConnectionStr)'
-      AZCOSMOS_DATABASE_NAME: 'sk_database'
-      AZCOSMOS_CONTAINER_NAME: 'sk_collection'
+      AZURE_COSMOS_PASSWORD: '@Microsoft.KeyVault(VaultName=${keyVault.outputs.name};SecretName=mongoAdminPassword)'
+      AZURE_COSMOS_CONNECTION_STRING: mongoCluster.outputs.connectionStringKey
+      AZURE_COSMOS_USERNAME: mongoAdminUser
+      AZURE_COSMOS_DATABASE_NAME: 'sk_database'
+      AZURE_COSMOS_COLLECTION_NAME: 'sk_collection'
+      AZURE_COSMOS_INDEX_NAME: 'sk_index'
     }
   }
 }

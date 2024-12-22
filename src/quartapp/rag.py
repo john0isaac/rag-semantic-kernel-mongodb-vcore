@@ -1,5 +1,6 @@
 import logging
 import os
+from urllib.parse import quote_plus
 
 from pymongo.errors import ServerSelectionTimeoutError
 from semantic_kernel import Kernel
@@ -10,6 +11,10 @@ from semantic_kernel.connectors.ai.open_ai import (  # type: ignore [import-unty
 )
 from semantic_kernel.connectors.memory.azure_cosmosdb import (  # type: ignore [import-untyped]
     AzureCosmosDBMemoryStore,
+)
+from semantic_kernel.connectors.memory.azure_cosmosdb.utils import (
+    CosmosDBSimilarityType,
+    CosmosDBVectorSearchType,
 )
 from semantic_kernel.core_plugins.text_memory_plugin import TextMemoryPlugin  # type: ignore [import-untyped]
 from semantic_kernel.exceptions import FunctionExecutionException, KernelInvokeException, ServiceResponseException
@@ -31,13 +36,25 @@ logging.basicConfig(
 
 
 # collection name will be used multiple times in the code so we store it in a variable
-collection_name = os.environ.get("AZCOSMOS_CONTAINER_NAME") or "sk_collection"
+database_name = os.getenv("AZURE_COSMOS_DATABASE_NAME")
+collection_name = os.getenv("AZURE_COSMOS_COLLECTION_NAME")
 
 # Vector search index parameters
-index_name = "VectorSearchIndex"
+index_name = os.getenv("AZURE_COSMOS_INDEX_NAME", "VectorSearchIndex")
 vector_dimensions = 1536  # text-embedding-ada-002 uses a 1536-dimensional embedding vector
-num_lists = 1
-similarity = "COS"  # cosine distance
+num_lists = 100
+similarity = CosmosDBSimilarityType.COS
+kind = CosmosDBVectorSearchType.VECTOR_HNSW
+m = 16
+ef_construction = 64
+ef_search = 40
+
+
+def get_mongo_connection_string() -> str:
+    mongo_connection_string = os.getenv("AZURE_COSMOS_CONNECTION_STRING", "<YOUR-COSMOS-DB-CONNECTION-STRING>")
+    mongo_username = quote_plus(os.getenv("AZURE_COSMOS_USERNAME"))
+    mongo_password = quote_plus(os.getenv("AZURE_COSMOS_PASSWORD"))
+    return mongo_connection_string.replace("<user>", mongo_username).replace("<password>", mongo_password)
 
 
 async def prompt_with_rag_or_vector(query_term: str, option: str) -> str:
@@ -100,14 +117,18 @@ async def initialize_sk_memory_store(
     try:
         logging.info("Creating or updating Azure Cosmos DB Memory Store...")
         store = await AzureCosmosDBMemoryStore.create(
-            cosmos_connstr=os.environ.get("AZCOSMOS_CONNSTR") or "connection-string",
+            cosmos_connstr=get_mongo_connection_string() or "mongodb://localhost:27017",
             cosmos_api="mongo-vcore",
-            database_name=os.environ.get("AZCOSMOS_DATABASE_NAME") or "sk_database",
-            collection_name=collection_name,
-            index_name=index_name,
+            database_name=database_name or "semanticKernel",
+            collection_name=collection_name or "textMemory",
+            index_name=index_name or "VectorSearchIndex",
             vector_dimensions=vector_dimensions,
             num_lists=num_lists,
             similarity=similarity,
+            kind=kind,
+            m=m,
+            ef_construction=ef_construction,
+            ef_search=ef_search,
         )
         logging.info("Finished updating Azure Cosmos DB Memory Store...")
 
