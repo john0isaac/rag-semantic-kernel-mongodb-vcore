@@ -17,6 +17,9 @@ on:
       - "src/requirements.in"
       - "src/pyproject.toml"
 
+permissions:
+  contents: read
+
 jobs:
   test_package:
 
