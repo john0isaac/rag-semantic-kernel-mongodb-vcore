@@ -167,7 +167,7 @@ When azd has finished deploying, you'll see an endpoint URI in the command outpu
 
 1. Select **SSH** from the left menu then, select **Go**.
 
-1. In the SSH terminal, run `python ./scripts/add_data.py`.
+1. In the SSH terminal, run `pip install -e .` then run `python ./scripts/add_data.py`.
 
 ## Add your Own Data
 
@@ -199,6 +199,7 @@ The Python scrips that adds the data is configured to accept any JSON file with 
 1. In the SSH terminal, run the following command with the changed values to suit your data:
 
     ```bash
+    pip install -e .
     python ./scripts/add_data.py --file="./data/text-sample.json" --id-field=id --text-field=content --description-field=title
     ```
 
@@ -219,5 +220,6 @@ The Python scrips that adds the data is configured to accept any JSON file with 
 1. In the SSH terminal, run the following command with the changed values to suit your data:
 
     ```bash
+    pip install -e .
     python ./scripts/add_data.py --file="./data/text-sample.json" --id-field=id --text-field=content --description-field=title
     ```
