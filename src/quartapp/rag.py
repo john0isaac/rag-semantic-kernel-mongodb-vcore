@@ -1,5 +1,6 @@
 import logging
 import os
+from urllib.parse import quote_plus
 
 from pymongo.errors import ServerSelectionTimeoutError
 from semantic_kernel import Kernel
@@ -10,6 +11,10 @@ from semantic_kernel.connectors.ai.open_ai import (  # type: ignore [import-unty
 )
 from semantic_kernel.connectors.memory.azure_cosmosdb import (  # type: ignore [import-untyped]
     AzureCosmosDBMemoryStore,
+)
+from semantic_kernel.connectors.memory.azure_cosmosdb.utils import (
+    CosmosDBSimilarityType,
+    CosmosDBVectorSearchType,
 )
 from semantic_kernel.core_plugins.text_memory_plugin import TextMemoryPlugin  # type: ignore [import-untyped]
 from semantic_kernel.exceptions import FunctionExecutionException, KernelInvokeException, ServiceResponseException
@@ -31,13 +36,25 @@ logging.basicConfig(
 
 
 # collection name will be used multiple times in the code so we store it in a variable
-collection_name = os.environ.get("AZCOSMOS_CONTAINER_NAME") or "sk_collection"
+database_name = os.getenv("AZURE_COSMOS_DATABASE_NAME", "semanticKernel")
+collection_name = os.getenv("AZURE_COSMOS_COLLECTION_NAME", "textMemory")
 
 # Vector search index parameters
-index_name = "VectorSearchIndex"
+index_name = os.getenv("AZURE_COSMOS_INDEX_NAME", "VectorSearchIndex")
 vector_dimensions = 1536  # text-embedding-ada-002 uses a 1536-dimensional embedding vector
-num_lists = 1
-similarity = "COS"  # cosine distance
+num_lists = 100
+similarity = CosmosDBSimilarityType.COS
+kind = CosmosDBVectorSearchType.VECTOR_HNSW
+m = 16
+ef_construction = 64
+ef_search = 40
+
+
+def get_mongo_connection_string() -> str:
+    mongo_connection_string = os.getenv("AZURE_COSMOS_CONNECTION_STRING", "<YOUR-COSMOS-DB-CONNECTION-STRING>")
+    mongo_username = quote_plus(os.getenv("AZURE_COSMOS_USERNAME", "admin"))
+    mongo_password = quote_plus(os.getenv("AZURE_COSMOS_PASSWORD", "password"))
+    return mongo_connection_string.replace("<user>", mongo_username).replace("<password>", mongo_password)
 
 
 async def prompt_with_rag_or_vector(query_term: str, option: str) -> str:
@@ -59,9 +76,9 @@ async def prompt_with_rag_or_vector(query_term: str, option: str) -> str:
 def initialize_sk_chat_embedding() -> Kernel:
     kernel = Kernel()
     # adding azure openai chat service
-    chat_model_deployment_name = os.environ.get("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME") or "chat-deployment"
-    endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT") or "https://test-endpoint.openai.com/"
-    api_key = os.environ.get("AZURE_OPENAI_API_KEY") or "VerySecretApiKey"
+    chat_model_deployment_name = os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME", "chat-deployment")
+    endpoint = os.getenv("AZURE_OPENAI_ENDPOINT", "https://test-endpoint.openai.com/")
+    api_key = os.getenv("AZURE_OPENAI_API_KEY", "VerySecretApiKey")
 
     kernel.add_service(
         AzureChatCompletion(
@@ -74,9 +91,7 @@ def initialize_sk_chat_embedding() -> Kernel:
     logging.info("Added Azure OpenAI Chat Service...")
 
     # adding azure openai text embedding service
-    embedding_model_deployment_name = (
-        os.environ.get("AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME") or "embedding-deployment"
-    )
+    embedding_model_deployment_name = os.getenv("AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT_NAME", "embedding-deployment")
 
     kernel.add_service(
         AzureTextEmbedding(
@@ -100,14 +115,18 @@ async def initialize_sk_memory_store(
     try:
         logging.info("Creating or updating Azure Cosmos DB Memory Store...")
         store = await AzureCosmosDBMemoryStore.create(
-            cosmos_connstr=os.environ.get("AZCOSMOS_CONNSTR") or "connection-string",
+            cosmos_connstr=get_mongo_connection_string(),
             cosmos_api="mongo-vcore",
-            database_name=os.environ.get("AZCOSMOS_DATABASE_NAME") or "sk_database",
+            database_name=database_name,
             collection_name=collection_name,
             index_name=index_name,
             vector_dimensions=vector_dimensions,
             num_lists=num_lists,
             similarity=similarity,
+            kind=kind,
+            m=m,
+            ef_construction=ef_construction,
+            ef_search=ef_search,
         )
         logging.info("Finished updating Azure Cosmos DB Memory Store...")
 
@@ -139,7 +158,7 @@ async def grounded_response(kernel: Kernel) -> KernelFunction:
     User: {{$query_term}}
     Chatbot:"""
 
-    chat_model_deployment_name = os.environ.get("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME")
+    chat_model_deployment_name = os.getenv("AZURE_OPENAI_CHAT_DEPLOYMENT_NAME", "chat-deployment")
 
     execution_settings = OpenAITextPromptExecutionSettings(
         service_id="chat_completion",
