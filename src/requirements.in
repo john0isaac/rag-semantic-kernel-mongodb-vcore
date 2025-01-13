@@ -1,4 +1,4 @@
-semantic-kernel==1.18.0
+semantic-kernel==1.18.1
 pymongo
 motor
 python-dotenv
