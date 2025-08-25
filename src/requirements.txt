@@ -10,6 +10,10 @@ aiohappyeyeballs==2.4.4
     # via aiohttp
 aiohttp==3.10.11
     # via semantic-kernel
+aioice==0.10.1
+    # via aiortc
+aiortc==1.13.0
+    # via semantic-kernel
 aiosignal==1.3.1
     # via aiohttp
 annotated-types==0.6.0
@@ -27,10 +31,24 @@ attrs==23.2.0
     #   aiohttp
     #   jsonschema
     #   referencing
+av==14.4.0
+    # via aiortc
+azure-ai-agents==1.2.0b3
+    # via
+    #   azure-ai-projects
+    #   semantic-kernel
+azure-ai-projects==1.1.0b2
+    # via semantic-kernel
 azure-core==1.32.0
-    # via azure-identity
+    # via
+    #   azure-ai-agents
+    #   azure-ai-projects
+    #   azure-identity
+    #   azure-storage-blob
 azure-identity==1.19.0
     # via semantic-kernel
+azure-storage-blob==12.26.0
+    # via azure-ai-projects
 blinker==1.7.0
     # via
     #   flask
@@ -41,7 +59,10 @@ certifi==2024.7.4
     #   httpx
     #   requests
 cffi==1.17.1
-    # via cryptography
+    # via
+    #   aiortc
+    #   cryptography
+    #   pylibsrtp
 chardet==5.2.0
     # via prance
 charset-normalizer==3.3.2
@@ -54,9 +75,12 @@ cloudevents==1.11.0
     # via semantic-kernel
 cryptography==44.0.0
     # via
+    #   aiortc
     #   azure-identity
+    #   azure-storage-blob
     #   msal
     #   pyjwt
+    #   pyopenssl
 defusedxml==0.7.1
     # via semantic-kernel
 deprecated==1.2.15
@@ -68,7 +92,9 @@ deprecation==2.1.0
 distro==1.9.0
     # via openai
 dnspython==2.7.0
-    # via pymongo
+    # via
+    #   aioice
+    #   pymongo
 exceptiongroup==1.2.2
     # via
     #   anyio
@@ -80,6 +106,8 @@ frozenlist==1.4.1
     # via
     #   aiohttp
     #   aiosignal
+google-crc32c==1.7.1
+    # via aiortc
 h11==0.14.0
     # via
     #   httpcore
@@ -95,7 +123,7 @@ httpx==0.27.0
     # via openai
 hypercorn==0.17.3
     # via
-    #   -r requirements.in
+    #   -r src/requirements.in
     #   quart
 hyperframe==6.0.1
     # via h2
@@ -105,10 +133,16 @@ idna==3.7
     #   httpx
     #   requests
     #   yarl
+ifaddr==0.2.0
+    # via aioice
 importlib-metadata==8.5.0
     # via opentelemetry-api
 isodate==0.6.1
-    # via openapi-core
+    # via
+    #   azure-ai-agents
+    #   azure-ai-projects
+    #   azure-storage-blob
+    #   openapi-core
 itsdangerous==2.1.2
     # via
     #   flask
@@ -142,8 +176,8 @@ markupsafe==2.1.5
     #   werkzeug
 more-itertools==10.2.0
     # via openapi-core
-motor==3.6.0
-    # via -r requirements.in
+motor==3.7.1
+    # via -r src/requirements.in
 msal==1.31.1
     # via
     #   azure-identity
@@ -157,8 +191,10 @@ multidict==6.0.5
 nest-asyncio==1.6.0
     # via semantic-kernel
 numpy==1.26.4
-    # via semantic-kernel
-openai==1.58.1
+    # via
+    #   scipy
+    #   semantic-kernel
+openai==1.101.0
     # via semantic-kernel
 openapi-core==0.18.2
     # via semantic-kernel
@@ -195,6 +231,8 @@ priority==2.0.0
     # via hypercorn
 propcache==0.2.1
     # via yarl
+protobuf==6.32.0
+    # via semantic-kernel
 pybars4==0.9.13
     # via semantic-kernel
 pycparser==2.22
@@ -208,26 +246,32 @@ pydantic-core==2.18.1
     # via pydantic
 pydantic-settings==2.2.1
     # via semantic-kernel
+pyee==13.0.0
+    # via aiortc
 pyjwt[crypto]==2.10.1
     # via
     #   msal
     #   pyjwt
+pylibsrtp==0.12.0
+    # via aiortc
 pymeta3==0.5.1
     # via pybars4
-pymongo==4.9.2
+pymongo==4.14.1
     # via
-    #   -r requirements.in
+    #   -r src/requirements.in
     #   motor
-python-dotenv==1.0.1
+pyopenssl==25.1.0
+    # via aiortc
+python-dotenv==1.1.1
     # via
-    #   -r requirements.in
+    #   -r src/requirements.in
     #   pydantic-settings
 pyyaml==6.0.1
     # via
     #   jsonschema-path
     #   jsonschema-spec
 quart==0.20.0
-    # via -r requirements.in
+    # via -r src/requirements.in
 referencing==0.30.2
     # via
     #   jsonschema
@@ -251,8 +295,10 @@ ruamel-yaml==0.18.6
     # via prance
 ruamel-yaml-clib==0.2.8
     # via ruamel-yaml
-semantic-kernel==1.18.0
-    # via -r requirements.in
+scipy==1.15.3
+    # via semantic-kernel
+semantic-kernel==1.35.3
+    # via -r src/requirements.in
 six==1.16.0
     # via
     #   azure-core
@@ -270,20 +316,28 @@ tomli==2.2.1
     # via hypercorn
 tqdm==4.66.3
     # via openai
-typing-extensions==4.12.2
+typing-extensions==4.14.1
     # via
     #   anyio
     #   asgiref
+    #   azure-ai-agents
+    #   azure-ai-projects
     #   azure-core
     #   azure-identity
+    #   azure-storage-blob
     #   hypercorn
     #   openai
     #   opentelemetry-sdk
     #   pydantic
     #   pydantic-core
+    #   pyee
+    #   pyopenssl
+    #   semantic-kernel
     #   taskgroup
 urllib3==2.2.2
     # via requests
+websockets==15.0.1
+    # via semantic-kernel
 werkzeug==3.0.6
     # via
     #   flask
