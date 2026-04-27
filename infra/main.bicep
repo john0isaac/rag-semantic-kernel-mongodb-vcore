@@ -26,8 +26,8 @@ param mongoServiceSku string
 param openAIDeploymentName string = '${name}-openai'
 param chatGptDeploymentName string = 'chat-gpt'
 param chatGptDeploymentCapacity int = 30
-param chatGptModelName string = 'gpt-35-turbo'
-param chatGptModelVersion string = '0613'
+param chatGptModelName string = 'gpt-4o-mini'
+param chatGptModelVersion string = '2024-07-18'
 param embeddingDeploymentName string = 'text-embedding'
 param embeddingDeploymentCapacity int = 30
 param embeddingModelName string = 'text-embedding-ada-002'
@@ -64,7 +64,7 @@ var openAiDeployments = [
       version: chatGptModelVersion
     }
     sku: {
-      name: 'Standard'
+      name: 'GlobalStandard'
       capacity: chatGptDeploymentCapacity
     }
   }
@@ -76,7 +76,7 @@ var openAiDeployments = [
       version: '2'
     }
     sku: {
-      name: 'Standard'
+      name: 'GlobalStandard'
       capacity: embeddingDeploymentCapacity
     }
   }
